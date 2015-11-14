@@ -5,7 +5,7 @@ var db = require("./private/db.js");
 var stock = require("./private/stock.js");
 
 
-
+console.log(require('fs').existsSync(__dirname + '/public'));
 //var getsiren = require ("./siren.js");
 /**
 * This method is used to process the request * @param req (Object) the request object
