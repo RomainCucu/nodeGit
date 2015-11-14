@@ -77,7 +77,7 @@ accueil.callback = function () {
 		if (r.categorie == "SUCCESS"){
 			if (r.suc_methode == "GETWALLETS") {
 				if(!r.portefeuillesNamesArray){
-					document.getElementById('displayPortefeuille').innerHTML ='<li class="dropdown" onclick="redirect();"><a href="#" data-toggle="collapse" data-target="#one">Ajouter un portefeuille</a></li>';
+					document.getElementById('displayPortefeuille').innerHTML ='<td class="dropdown" onclick="redirect();"><a href="#" data-toggle="collapse" data-target="#one">Ajouter un portefeuille</a></td>';
 				}else{
 					console.log(r);
 					instrumentList = r.instrumentList;
