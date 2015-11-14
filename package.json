@@ -7,18 +7,23 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
-  "dependencies": {
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+   "dependencies": {
     "mongodb": "x",
     "nedb": "^1.1.1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/alexandremagne/ProjetM2.git"
+    "url": "https://github.com/RomainCucu/nodeGit.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/alexandremagne/ProjetM2/issues"
+    "url": "https://github.com/RomainCucu/nodeGit/issues"
   },
-  "homepage": "https://github.com/alexandremagne/ProjetM2"
+  "homepage": "https://github.com/RomainCucu/nodeGit"
 }
