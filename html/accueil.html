@@ -1,0 +1,191 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Titre de la page</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="../CSS/bootstrap.min.css">
+    <script type="text/javascript" src="../JS/jquery.js"> </script>
+  </head>
+  <body>
+   <div class="container-fluid">
+    <div class="row"><!-- nav bar -->
+  		<div class="col-md-12">
+          <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container-fluid">
+          <!-- Brand and toggle get grouped for better mobile display -->
+              <div class="navbar-header">
+                <a class="navbar-brand active" href="./accueil.html">
+                  <p style="font:15px verdana; color:#000;">
+                    Bourse
+                  </p>
+                </a>
+                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                   <span class="sr-only">Toggle navigation</span>
+                   <span class="icon-bar"></span>
+                   <span class="icon-bar"></span>
+                   <span class="icon-bar"></span>
+                 </button>
+              </div>
+              <p class="navbar-text navbar-right">Signed in as <a href="#" class="navbar-link">Mark Otto</a></p>
+            </div>
+          </div><!-- /.container-fluid -->
+        </div>
+    </div><!-- nav bar -->
+    <div class="row" style="padding-top:5%"><!-- row -->
+      <div class="col-md-12"><!-- col12 -->             
+        <nav class="navbar navbar-default" role="navigation" id="topmenu" style="padding-left: 10px;">
+          <button type="button" class="btn btn-success navbar-btn navbar-left" data-toggle="modal" data-target="#modalAjoutPortefeuille">
+            ajouter un portefeuille
+          </button>            
+          <ul class="nav navbar-nav navbar" id="displayPortefeuille">            
+          </ul>
+        </nav>            
+    </div><!-- col12 --> 
+    </div> <!-- row -->
+    <div class="row">
+      <div class="col-md-12" id="affichageTitrePortefeuille">
+      </div>      
+      <div class="col-md-12">
+        <hr>
+          <table class="table table-bordered" data-toggle="table"  data-cache="false" data-height="299" id="vuePortefeuille">            
+          </table>
+      </div>
+      <div class="col-md-12" id="performanceGlobalPortefeuille">
+      </div>
+    </div><!-- row -->
+    <div class="row">
+      <div class="col-md-12" id="affichage performance">
+      </div>
+    </div><!-- row -->
+    </div><!-- container -->
+  </body>
+  <!-- ------------------------------------------ MODALS -------------------------------------------------------------------------------- -->
+  <div class="modal fade" id="modalAjoutPortefeuille" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"><!-- modal ajout portefeuille -->
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Ajouter un portefeuille</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form" role="form" id="addWalletForm">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group col-md-12">
+                  <label for="nameOfWallet">Name of wallet</label>
+                    <div class="form-inline" >
+                      <input type="text" class="form-control" placeholder="Symbole" id="addWalletCheckName" autofocus>
+                      <div class="modal-footer">
+                        <span id="addWalletButton"><button class="btn btn-sm btn-success" type="submit">Create a wallet</button></span>
+                        <span id="addWalletButtonLoader" style="display:none"><img class="col-sm-offset-0" src="../images/ajax-loader.gif" width="60" height="60" /></span>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>        
+                      </div>                      
+                    </div>
+                  </div><!-- col-md-12 -->
+                </div> <!-- col-md-6 -->        
+            </div><!-- row -->
+        </form>
+        <div class="alert alert-success alert-dismissible fade in" role="alert" id="alertAddWalletSuccess" style="display:none;">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <h4>Wallet added successfully</h4>
+        </div>
+        <div class="alert alert-success alert-dismissible fade in" role="alert" id="alertAddWalletFail" style="display:none;">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <h4>Wallet was not added</h4>
+        </div>
+      </div>      
+    </div>
+  </div>
+</div><!-- modal ajout portefeuille -->
+<!-- ------------------------------------------ MODALS ajout instrument------------------------------------------------------------------------ -->
+<div class="modal fade" id="modalAjoutInstrument" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"><!-- modal ajout instrument -->
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Ajouter un portefeuille</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form" role="form" id="formCheckSymbol">
+    <div class="row">
+      <div class="col-md-6" style="border-right:1px solid grey">
+        <div class="form-group col-md-12">       
+            <label for="libelle">Label of action</label>              
+                <input type="text" class="form-control" placeholder="Symbole" id="formCheckSymbolValue" autofocus>
+                <br>             
+                <button id="formCheckSymbolButton" class="btn btn-sm btn-success" type="submit">Check symbol</button>
+                <img class="col-sm-offset-0" id="formCheckSymbolButtonLoader" style="display:none" src="../images/ajax-loader.gif" width="60" height="60" />
+              </div><!-- col-md-12 -->
+            </div> <!-- col-md-6 -->
+          <div class="col-md-6 ">
+            <div class="form-group col-md-12">       
+            <div class="" style="margin-top:30px" id="displayResultSymbol"></div> <!-- col-md-6 -->
+          </div><!-- col-md-12 -->
+          </div><!-- col-md-6 -->
+      </div><!-- row -->
+     </form>
+<hr>
+    <form class="form" role="form" id="addValueToDB">
+    <div class="row">
+      <div class="col-md-6" style="border-right:1px solid grey"><!-- partie de gauche -->
+
+            <div class="form-group col-md-12"><!-- nombre actions achetées -->
+            <label for="nombreAction">Nombre d'action achetées</label>
+            <input type="number" class="form-control" id="nombreAction" required="" placeholder="Nombre Actions Achetées">
+            </div>
+            
+            <div class="form-group col-md-12"><!-- Valeur de l'action à l'achat -->
+              <label for="valeurAchat">Valeur d'une action à l'achat</label>
+              <input type="number" step="any" class="form-control" id="valeurAchat" required="" placeholder="Valeur Achat">
+              
+            </div>
+           
+      </div><!-- partie gauche-->
+      <div class="col-md-6" ><!-- partie de droite -->
+        <div class="form-group col-md-12"><!-- Frais de commission à l'achat-->
+            <label for="fraisAchat">Frais de commission à l'achat</label>
+            <input type="number" step="any"  class="form-control" id="fraisAchat" required="" placeholder="Frais Achat">
+          </div>       
+            <div class="form-group col-md-12"><!-- Frais de commission à la vente -->
+          <label for="fraisVente">Frais de commission à la vente</label>
+          <input type="number" step="any"  class="form-control" id="fraisVente" required="" placeholder="Frais Ventes">
+            </div>
+      </div>  <!-- partie droite-->
+      <div class="col-md-6" style="border-right:1px solid grey"><!-- partie de gauche -->
+        <div class="form-group col-md-12"><!-- nombre actions achetées -->
+
+              <button id="formAddValueButton" class="btn btn-sm btn-success" type="submit">Ajouter !</button>
+                <img id="formAddValueButtonLoader" style="display:none" class="col-sm-offset-0" src="../images/ajax-loader.gif" width="60" height="60" />  
+        </div>
+      </div>
+    </div><!-- row-->
+  </form>
+        <div class="alert alert-success alert-dismissible fade in" role="alert" id="alertAddInstruSuccess" style="display:none;">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <h4>Instrument added successfully</h4>
+        </div>
+        <div class="alert alert-success alert-dismissible fade in" role="alert" id="alertAddInstruFail" style="display:none;">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <h4>Instrument was not added</h4>
+        </div>
+      </div>      
+    </div>
+  </div>
+</div><!-- modal ajout instrument -->
+<script>
+  $('#modalAjoutPortefeuille').on('shown.bs.modal', function (e) {    
+  document.getElementById("addWalletCheckName").focus();
+});
+  $('#modalAjoutInstrument').on('shown.bs.modal', function (e) {    
+  document.getElementById("formCheckSymbolValue").focus();
+})
+</script>
+</html>
+
+<script type="text/javascript" src="../JS/accueil.js"> </script>
+<script type="text/javascript" src="../JS/addWallet.js"> </script>
+<script type="text/javascript" src="../JS/addValue.js"> </script>
+
+<script type="text/javascript" src="../JS/bootstrap.min.js"> </script>
