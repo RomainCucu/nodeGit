@@ -7,7 +7,7 @@ signin.start = function(){
 signin.formAction = function(){
 	document.getElementById('formSignin').onsubmit = function(event){
 		document.getElementById('signinAjaxLoader').innerHTML ='<img class="col-md-offset-6" src="../images/ajax-loader.gif" width="60" height="60" />';
-		var formLogin = document.getElementById('formLogin').value;
+		var formLogin = document.getElementById('formLogin').toLowerCase();
 		var formPassword = document.getElementById('formPassword').value;
 		var formRememberMe = document.getElementById('formRememberMe').checked;
 		signin.post({action:'signin',formLogin:formLogin,formPassword:formPassword, formRememberMe:formRememberMe}, signin.log_callback);
