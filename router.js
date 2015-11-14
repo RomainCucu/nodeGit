@@ -46,7 +46,7 @@ rest_method:
 		} else if (this.req.method == "POST") {
 			this.post_method();
 		} else {
-			this.resp.writeHead(501, {"Content -Type": "application/json"});
+			this.resp.writeHead(501, {"Content-Type": "application/json"});
 			this.resp.write(JSON.stringify({message: "Not Implemented"}));
 			this.resp.end();
 			return;
@@ -201,7 +201,7 @@ load_file:
 			} });
 			} else {
 				util.log("INFO - File requested not found : " + _this.path);
-				_this.resp.writeHead(404, {"Content -Type":"text/html"});
+				_this.resp.writeHead(404, {"Content-Type":"text/html"});
 				_this.resp.end(); 
 			}
 		});
@@ -210,7 +210,7 @@ load_file:
 file_processing:
 	function () {
 		if (this.filetype == "htm") {
-			this.resp.writeHead(200, {"Content -Type": "text/html"});
+			this.resp.writeHead(200, {"Content-Type": "text/html"});
 		} else if (this.image_file.indexOf(this.filetype) >= 0) {
 			this.resp.writeHead(200, { "Content-Type" : "image/" + this.filetype });
 		} else {
