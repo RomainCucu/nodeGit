@@ -53,9 +53,10 @@ var afficherPortefeuille = function(index){
 				'<td><b>'+sommeFraisAchat.toFixed(2)+'</b></td>'+
 				'<td><b>'+sommeFraisVente.toFixed(2)+'</b></td>'+
 				'<td><b>'+sommePlusMoinsValueAvecFrais.toFixed(2)+'</b></td>'+
+				'<td><b>'+(parseInt(sommeValeurAchat)+parseInt(sommePlusMoinsValueAvecFrais)).toFixed(2)+'</b></td>'+
 				'</tr>';
 	string += '</tbody>';
-	document.getElementById('performanceGlobalPortefeuille').innerHTML = (parseInt(sommeValeurAchat)+parseInt(sommePlusMoinsValueAvecFrais)).toFixed(2);
+	//document.getElementById('performanceGlobalPortefeuille').innerHTML = (parseInt(sommeValeurAchat)+parseInt(sommePlusMoinsValueAvecFrais)).toFixed(2);
 	document.getElementById('vuePortefeuille').innerHTML = string;//affichage tableau
 }
 

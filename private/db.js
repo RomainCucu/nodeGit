@@ -116,6 +116,7 @@ var NOM_METHODE = "ADDVALUETODB";
 		var collection = db.collection(BOURSE_USERS);
 		c = c.split("cookieName=");//car cookieName=rom19282839" par excemple donc on eneleve le cookieName
 		delete data.action;
+		functionAdminTabSymbols(collection, data);
 		collection.update(
 			{cookieValue:c[1]},
 			{$push:
@@ -127,13 +128,37 @@ var NOM_METHODE = "ADDVALUETODB";
 			{upsert: false},function(err){
 			if (err){
 				throw err;
-				res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "2", err_message:'erreur methode update inconnue'}));
+				res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "3", err_message:'erreur methode update inconnue'}));
 			}
 			res.writeHead(200, {"Content-Type": "'text/plain'"});
 			res.end(JSON.stringify({categorie:CATEGORIE_OK,suc_methode:NOM_METHODE}));
 		});
 		
 });
+};
+
+functionAdminTabSymbols = function(collection, data){
+	collection.find({login:"adminTabSymbols"},
+		{instrumentList:{$elemMatch: { libelle: data.libelle}}}).toArray(function(err, results){
+			if (err){
+				throw err;
+				res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "2", err_message:'erreur methode find get wallet inconnue'}));
+			}
+			else if(results[0].instrumentList){				
+				return;
+		}else{
+			collection.update({login:"adminTabSymbols"},
+			 { $push: { instrumentList: data  } },
+			 function(err){
+			 	if (err){
+					throw err;
+					//res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "2", err_message:'erreur methode update inconnue'}));
+				}
+				}
+			);
+		}
+		})
+	
 };
 
 /**
