@@ -1,8 +1,6 @@
 var http = require("http");
 var util = require("util");
-
-
-
+var db = require("./private/db.js");
 
 var server = {}; //Server object. This object is use to stock everything owned by the server.
 server.r = require("./router.js"); server.port = (process.env.PORT || 8080);
@@ -18,7 +16,11 @@ server.receive_request = function (req, resp) { server.r.router(req, resp);
 http.createServer(server.receive_request).listen(server.port, server.address);
 util.log("INFO - Server started, listening " + server.address + ":" + server.port);
 
-
-
+try{
+	//db.MAJVALEURSALLINSTRUMENTS();
+	//setInterval(db.MAJVALEURSALLINSTRUMENTS, 99000);//900000
+}catch(e){
+	//console.log("err maj all instru");
+}
 
 

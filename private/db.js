@@ -121,8 +121,7 @@ var NOM_METHODE = "ADDVALUETODB";
 			{cookieValue:c[1]},
 			{$push:
 				{					 					 
-				 	"instrumentList": data
-				 					
+				 	"instrumentList": data				 					
 				 }
 			},
 			{upsert: false},function(err){
@@ -137,6 +136,9 @@ var NOM_METHODE = "ADDVALUETODB";
 });
 };
 
+/**
+* fonction qui ajoute le symbole aussi dans le document adminTabSymbols
+*/
 functionAdminTabSymbols = function(collection, data){
 	collection.find({login:"adminTabSymbols"},
 		{instrumentList:{$elemMatch: { libelle: data.libelle}}}).toArray(function(err, results){
@@ -246,8 +248,8 @@ exports.MAJVALEURSINSTRUMENTS = function(res, c){
 					getStock(arr[i].libelle, function(value){
 					if(value!="err"){
 						var obj = {};
-						var s = "instrumentList."+i+".valeurActuelle";
-						obj[s]=value.replace(",",".");
+						var s = "instrumentList."+i+".valeurActuelle";						
+						obj[s]=value[0].replace(",",".");
 						collection.update({cookieValue:c[1]},{$set:obj},function(err, db) {
 							if(err){
 					    		throw err;
@@ -294,10 +296,10 @@ exports.supprimerInstrument = function (data, res, c){
 };
 
 /**
+* fonction qui recupere la valeur d'un instrument sur Yahoo
 */
-var https = require("https");//pour recuperer les valeur de la bourse
-
 var getStock = function (symbol, cb){
+var https = require("https");//pour recuperer les valeur de la bourse
 https.get("https://fr.finance.yahoo.com/q?s="+symbol+"&ql=1", function(res) {
   //console.log("Got response: " + res.statusCode);
   var buff = '';
@@ -307,26 +309,106 @@ https.get("https://fr.finance.yahoo.com/q?s="+symbol+"&ql=1", function(res) {
   res.on("end",function(){    		
           var str = buff;
           var str2 = buff;
-
+          //valeur
           var positionofmyvalue = str.indexOf("time_rtq_ticker");          
           str = str.slice(positionofmyvalue,positionofmyvalue+100);
           str = str.split("</span>");
           str = str[0].split(">");
-
-          var positionofmyvalue2 = str2.indexOf("yfi_rt_quote_summary");
+          //date
+          var positionofmyvalue2 = str2.indexOf('"time_rtq"');
           str2 = str2.slice(positionofmyvalue2,positionofmyvalue2+200);
-          str2 = str2.split("<h2>");
-          if(str2[1]){
-            str2 = str2[1].split("</h2");
-            }else{            	
-              cb("err");
-            }
-                           
-          cb(str[2]);
+          str2 = str2.split("</span>");
+          str2 = str2[0].split(">");                
+          cb([str[2],str2[2]]);
     });
 }).on('error', function(e) {
-  return("erreur");
+  return("err");
   console.log("Got error: " + e.message);
 });
+};
+
+/**
+* RCU - 12/09/2015 - Ajout fonction qui mets à jours toutes les valeurs du doc adminTabSymbols
+* parametres entree : rien
+* collection : bourse_users
+************************************************************************************
+*/
+exports.MAJVALEURSALLINSTRUMENTS = function(){
+	var NOM_METHODE = "MAJVALEURSALLINSTRUMENTS";
+	MongoClient.connect(ID_MONGO, function(err, db) {
+    if(err){
+    	throw err;
+    }
+    var collection = db.collection(BOURSE_USERS);	
+
+	collection.find({login:"adminTabSymbols"}).toArray(function(err, results){
+		if (err){
+			throw err;			
+		}
+		else if(results[0]){
+			var arr = results[0].instrumentList;
+			function iterate(i){
+				try{					
+					getStock(arr[i].libelle, function(value){
+						if(value!="err"){							
+							var obj = {};							
+							var obj3 = {};
+							var s = "instrumentList."+i+".valeurActuelle";							
+							var sAllDays = "instrumentList."+i+".tableauAllDays";
+							obj[s]=value[0].replace(",",".");							
+							collection.update({login:"adminTabSymbols"},{$set:obj},function(err, db) {
+								if(err){
+						    		throw err;					    		
+						    	}				    	
+							});
+							MAJINTRADAYVALUES(collection,value,i);
+							//DELETEINTRADAYTAB(collection,value,i);
+						}
+					})
+				}catch(e){
+					console.log(e);
+				}
+			}for(i in arr) iterate(i);		    	
+		}else{
+			console.log("err db.MAJVALEURSALLINSTRUMENTS dans le fichier db . js");
+		}
+	});    
+});
+};
+
+/**
+* fonction qui met à jour les valeurs intraday en fonction de l'heure
+*/
+var MAJINTRADAYVALUES = function(collection,value,i){
+
+	var obj2 = {};
+	var sIntraday = "instrumentList."+i+".tableauIntraday";
+	obj2[sIntraday]=[value[0].replace(",","."),value[1]];
+	collection.update({login:"adminTabSymbols"},{$push:obj2},function(err, db) {
+		if(err){
+			throw err;			
+			return;		    		
+		}else{
+			return;
+		}			    	
+	});
+};
+
+/**
+* fonction qui supprime les valeurs intraday en fonction de l'heure
+*/
+var DELETEINTRADAYTAB = function(collection,value,i){
+
+	var obj2 = {};
+	var sIntraday = "instrumentList."+i+".tableauIntraday";
+	obj2[sIntraday]=[];
+	collection.update({login:"adminTabSymbols"},{$set:obj2},function(err, db) {
+		if(err){
+			throw err;			
+			return;		    		
+		}else{			
+			return;
+		}			    	
+	});
 };
 

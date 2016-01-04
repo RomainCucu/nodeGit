@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Calcul</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/signin.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+     
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+     <script src="./js/jquery.js"></script>
+  </head>
+
+  <body>
+
+    <div class="container-fluid">
+    <div class="row">
+    <div class="col-md-12">
+     <form class="form-horizontal">
+      <div class="form-group">
+        <label for="idSuperficieTotale" class="col-sm-2 control-label">Superficie Totale</label>
+        <div class="col-sm-3">
+          <div class="input-group">
+            <input type="number" class="form-control" id="idSuperficieTotale" placeholder="Superficie Totale" >
+            <div class="input-group-addon">m<sup>2</sup> </div>
+          </div>
+        </div>
+        <div class="col-sm-3">
+            <span id="idResultSuperficieTotale"></span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="idLoyerPrincipal" class="col-sm-2 control-label">Loyer Principal</label>
+        <div class="col-sm-3">
+          <div class="input-group">
+            <input type="number" class="form-control" id="idLoyerPrincipal" placeholder="Loyer Principal" 
+                          onkeyup="calculLoyerPrincipalParMois();" onblur="calculLoyerPrincipalParMois();">
+            <div class="input-group-addon">€&nbsp&nbsp</div>
+          </div>
+        </div>
+        <div class="col-sm-3">
+            <span id="idResultLoyerPrincipal"></span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="idCharges" class="col-sm-2 control-label">Provisions sur charges</label>
+        <div class="col-sm-3">
+          <div class="input-group">
+            <input type="number" class="form-control" id="idCharges" placeholder="Provisions sur charges">
+            <div class="input-group-addon">€&nbsp&nbsp</div>
+          </div>
+        </div>
+        <div class="col-sm-3">
+            <span id="idResultChargeHorsEau"></span>
+        </div>
+      </div>
+    
+      <div class="form-group">
+        <label for="idFraisGeranceTTC" class="col-sm-2 control-label">Frais Gérance TTC</label>
+        <div class="col-sm-3">
+          <div class="input-group">
+            <input type="number" class="form-control" id="idFraiGeranceTTC" placeholder="TAUX">
+            <div class="input-group-addon">%&nbsp&nbsp</div>
+          </div>
+        </div>
+        <div class="col-sm-3">
+            <span id="idResultFraisGeranceTTC"></span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="idAssuranceLoyer" class="col-sm-2 control-label">Assurance Loyer</label>
+        <div class="col-sm-3">
+          <div class="input-group">
+            <input type="number" class="form-control" id="idAssuranceLoyer" placeholder="Assurance Loyer">
+            <div class="input-group-addon">%&nbsp&nbsp</div>
+          </div>
+        </div>
+        <div class="col-sm-3">
+            <span id="idResultAssuranceLoyer"></span>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <button type="submit" class="btn btn-default">Sign in</button>
+        </div>
+      </div>
+    </form>
+
+    </div>
+    </div>
+    </div> <!-- /container -->
+ <script>
+  function format_num(id) {
+  var number = document.getElementById(id).value;
+        number += '';
+        number = number.replace(",","");
+        x = number.split('.');
+        x1 = x[0];
+        x2 = x.length > 1 ? '.' + x[1] : '';
+        var rgx = /(\d+)(\d{3})/;
+        while (rgx.test(x1)) {
+            x1 = x1.replace(rgx, '$1' + ',' + '$2');
+        }
+        document.getElementById(id).value = x1 + x2;
+    }
+
+    function calculLoyerPrincipalParMois(){
+      var numberSuperficie = document.getElementById('idSuperficieTotale').value;
+      console.log(numberSuperficie);
+      var numberLoyer = document.getElementById('idLoyerPrincipal').value;
+      console.log(numberLoyer);
+      var result = numberLoyer/numberSuperficie/1;
+      console.log(result);
+      document.getElementById('idResultLoyerPrincipal').innerHTML = "Résultat: <b>"+result.toFixed(2)+" €/m<sup>2</sup>/mois</b>";
+    }
+
+    function calculLoyerPrincipalParMois(){
+      var numberSuperficie = document.getElementById('idSuperficieTotale').value;
+      console.log(numberSuperficie);
+      var numberLoyer = document.getElementById('idLoyerPrincipal').value;
+      console.log(numberLoyer);
+      var result = numberLoyer/numberSuperficie/1;
+      console.log(result);
+      document.getElementById('idResultLoyerPrincipal').innerHTML = "Résultat: <b>"+result.toFixed(2)+" €/m<sup>2</sup>/mois</b>";
+    }
+
+ </script>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+  </body>
+</html>

@@ -24,28 +24,37 @@ var afficherPortefeuille = function(index){
 	'<button type="button" style="margin-top:2%;" class="btn btn-success col-md-3 col-md-offset-3" data-toggle="modal" data-target="#modalAjoutInstrument">'+
 	'ajouter un instrument</button>';
 	var string = '<thead><tr><th>Libellé</th><th>Nombre</th><th>Valeur Achat</th><th>Valeur Actuelle</th><th>Frais A</th><th>Frais V</th>'+
-	'<th>+/- value</th><th>Action</th></tr></thead>';
+	'<th>+/- value</th><th >évolution pourcentage</th><th>Action</th></tr></thead>';
 	string += '<tbody>';
 	for (i in instrumentList){
 		if(instrumentList[i].nomPortefeuille == portefeuillesNamesArray[index]){
+			//  +/- value par instrument avec les frais
 			var plusMoinsValueInstrument = instrumentList[i].nombreActions*(instrumentList[i].valeurActuelle-instrumentList[i].valeurAchat)-instrumentList[i].fraisAchat-instrumentList[i].fraisVente;
+			//  somme +/- value des instruments AVEC les frais
 			sommePlusMoinsValueAvecFrais += plusMoinsValueInstrument;
+			//  somme +/- value des instruments SANS les frais
 			sommePlusMoinsValueSansFrais += instrumentList[i].nombreActions*(instrumentList[i].valeurActuelle-instrumentList[i].valeurAchat);
+			// somme lors de l'achat des titres sans frais
 			sommeValeurAchat += instrumentList[i].nombreActions*instrumentList[i].valeurAchat;
+			// somme actuelle des valeurs detenues
 			sommeValeurActuelle += instrumentList[i].nombreActions*instrumentList[i].valeurActuelle;
+			// somme des frais achat
 			sommeFraisAchat += parseInt(instrumentList[i].fraisAchat);
+			// somme des frais vente
 			sommeFraisVente += parseInt(instrumentList[i].fraisVente);
-			string += '<tr><td >'+instrumentList[i].nomCompletAction+'</td>'+
+			pourcentageParAction = (instrumentList[i].valeurActuelle-instrumentList[i].valeurAchat)/instrumentList[i].valeurAchat*100;
+			string += '<tr><td >'+instrumentList[i].nomCompletAction.trim()+'</td>'+
 			'<td >'+instrumentList[i].nombreActions+'</td>'+
 			'<td >'+instrumentList[i].valeurAchat+'</td>'+
 			'<td >'+instrumentList[i].valeurActuelle+'</td>'+
 			'<td >'+instrumentList[i].fraisAchat+'</td>'+
 			'<td >'+instrumentList[i].fraisVente+'</td>'+
 			'<td >'+plusMoinsValueInstrument.toFixed(2)+'</td>'+
+			'<td >'+pourcentageParAction.toFixed(2)+' %</td>'+
 			'<td><span class="glyphicon glyphicon-remove-sign text-danger" style="cursor:pointer;" onclick="supprimerInstrument('+instrumentList[i]._id+')" aria-hidden="true"></span></td>'+
 			'</tr>';
 		}
-	}
+	}	
 	string += '<tr><td ><b>TOTAL</b></td>'+
 				'<td>&nbsp;</td>'+
 				'<td><b>'+sommeValeurAchat.toFixed(2)+'</b></td>'+
@@ -53,7 +62,8 @@ var afficherPortefeuille = function(index){
 				'<td><b>'+sommeFraisAchat.toFixed(2)+'</b></td>'+
 				'<td><b>'+sommeFraisVente.toFixed(2)+'</b></td>'+
 				'<td><b>'+sommePlusMoinsValueAvecFrais.toFixed(2)+'</b></td>'+
-				'<td><b>'+(parseInt(sommeValeurAchat)+parseInt(sommePlusMoinsValueAvecFrais)).toFixed(2)+'</b></td>'+
+				'<td><b>'+((sommeValeurActuelle-sommeValeurAchat)/sommeValeurAchat*100).toFixed(2)+' %</b></td>'+
+				'<td><b>'+(parseInt(sommeValeurAchat)+parseInt(sommePlusMoinsValueAvecFrais)).toFixed(2)+'</b></td>'+								
 				'</tr>';
 	string += '</tbody>';
 	//document.getElementById('performanceGlobalPortefeuille').innerHTML = (parseInt(sommeValeurAchat)+parseInt(sommePlusMoinsValueAvecFrais)).toFixed(2);

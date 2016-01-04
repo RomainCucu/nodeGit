@@ -20,6 +20,8 @@ srouter = function (req, resp) {
 	 if (req && resp) {
 			this.req = req;
 			this.resp = resp;
+			//console.log("---------: "+util.inspect(req, false, null));
+			//console.log("---------: "+util.inspect(resp, false, null));
 			this.pathname = "";
 			this.filetype = "";
 			this.path = "";
@@ -66,17 +68,15 @@ get_method:
 			{
 				db.valid_cookie(this.req.headers.cookie, this, "check_cookie");
 			}
-		else{
-			
+		else{			
 				this.read_file();
 		}
 		},
 
 check_cookie:
 	function (ret) {		
-		if (ret) {
-				this.read_file();
-			
+		if (ret) {				
+				this.read_file();			
 		}else{
 			this.path = "./index.html";
 			this.read_file();			
