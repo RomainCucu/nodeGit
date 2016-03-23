@@ -6,7 +6,7 @@ var MongoClient = require('mongodb').MongoClient
     , format = require('util').format;
 
 //var ID_MONGO = 'mongodb://comm-uniq:commUniqVincennesChocoAngel08@dogen.mongohq.com:10036/ProjetEsme';
-var ID_MONGO = process.env.ENV_VARIABLE;
+var ID_MONGO = process.env.DATABASE_URL;
 //collections
 var BOURSE_USERS = 'bourse_users';
 //messages d'erreur
