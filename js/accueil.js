@@ -13,47 +13,48 @@ var getAllWallets = function(){
 	accueil.post({action:'GETWALLETS'}, accueil.callback);
 }
 
-var afficherPortefeuille = function(index){		
+var afficherPortefeuille = function(i){		
 	var sommeValeurAchat = 0;
 	var sommeValeurActuelle = 0;
 	var sommeFraisAchat = 0;
 	var sommeFraisVente = 0;
 	var sommePlusMoinsValueSansFrais = 0;
 	var sommePlusMoinsValueAvecFrais = 0;
-	document.getElementById('affichageTitrePortefeuille').innerHTML='<h1 id="portefeuillesNameSelect" class="col-md-4">'+portefeuillesNamesArray[index]+'</h1>'+	
+	var nameWallet = portefeuillesNamesArray[i];
+	var instrumentListWallet = instrumentList[nameWallet];
+	document.getElementById('affichageTitrePortefeuille').innerHTML='<h1 id="portefeuillesNameSelect" class="col-md-4">'+nameWallet+'</h1>'+	
 	'<button type="button" style="margin-top:2%;" class="btn btn-success col-md-3 col-md-offset-3" data-toggle="modal" data-target="#modalAjoutInstrument">'+
 	'ajouter un instrument</button>';
 	var string = '<thead><tr><th>Libellé</th><th>Nombre</th><th>Valeur Achat</th><th>Valeur Actuelle</th><th>Frais A</th><th>Frais V</th>'+
 	'<th>+/- value</th><th >évolution pourcentage</th><th>Action</th></tr></thead>';
 	string += '<tbody>';
-	for (i in instrumentList){
-		if(instrumentList[i].nomPortefeuille == portefeuillesNamesArray[index]){
+	for (i in instrumentListWallet){		
 			//  +/- value par instrument avec les frais
-			var plusMoinsValueInstrument = instrumentList[i].nombreActions*(instrumentList[i].valeurActuelle-instrumentList[i].valeurAchat)-instrumentList[i].fraisAchat-instrumentList[i].fraisVente;
+			var plusMoinsValueInstrument = instrumentListWallet[i].nombreActions*(instrumentListWallet[i].valeurActuelle-instrumentListWallet[i].valeurAchat)-instrumentListWallet[i].fraisAchat-instrumentListWallet[i].fraisVente;
 			//  somme +/- value des instruments AVEC les frais
 			sommePlusMoinsValueAvecFrais += plusMoinsValueInstrument;
 			//  somme +/- value des instruments SANS les frais
-			sommePlusMoinsValueSansFrais += instrumentList[i].nombreActions*(instrumentList[i].valeurActuelle-instrumentList[i].valeurAchat);
+			sommePlusMoinsValueSansFrais += instrumentListWallet[i].nombreActions*(instrumentListWallet[i].valeurActuelle-instrumentListWallet[i].valeurAchat);
 			// somme lors de l'achat des titres sans frais
-			sommeValeurAchat += instrumentList[i].nombreActions*instrumentList[i].valeurAchat;
+			sommeValeurAchat += instrumentListWallet[i].nombreActions*instrumentListWallet[i].valeurAchat;
 			// somme actuelle des valeurs detenues
-			sommeValeurActuelle += instrumentList[i].nombreActions*instrumentList[i].valeurActuelle;
+			sommeValeurActuelle += instrumentListWallet[i].nombreActions*instrumentListWallet[i].valeurActuelle;
 			// somme des frais achat
-			sommeFraisAchat += parseInt(instrumentList[i].fraisAchat);
+			sommeFraisAchat += parseInt(instrumentListWallet[i].fraisAchat);
 			// somme des frais vente
-			sommeFraisVente += parseInt(instrumentList[i].fraisVente);
-			pourcentageParAction = (instrumentList[i].valeurActuelle-instrumentList[i].valeurAchat)/instrumentList[i].valeurAchat*100;
-			string += '<tr><td >'+instrumentList[i].nomCompletAction.trim()+'</td>'+
-			'<td >'+instrumentList[i].nombreActions+'</td>'+
-			'<td >'+instrumentList[i].valeurAchat+'</td>'+
-			'<td >'+instrumentList[i].valeurActuelle+'</td>'+
-			'<td >'+instrumentList[i].fraisAchat+'</td>'+
-			'<td >'+instrumentList[i].fraisVente+'</td>'+
+			sommeFraisVente += parseInt(instrumentListWallet[i].fraisVente);
+			pourcentageParAction = (instrumentListWallet[i].valeurActuelle-instrumentListWallet[i].valeurAchat)/instrumentListWallet[i].valeurAchat*100;
+			string += '<tr><td >'+instrumentListWallet[i].nomCompletAction.trim()+'</td>'+
+			'<td >'+instrumentListWallet[i].nombreActions+'</td>'+
+			'<td >'+instrumentListWallet[i].valeurAchat+'</td>'+
+			'<td >'+instrumentListWallet[i].valeurActuelle+'</td>'+
+			'<td >'+instrumentListWallet[i].fraisAchat+'</td>'+
+			'<td >'+instrumentListWallet[i].fraisVente+'</td>'+
 			'<td >'+plusMoinsValueInstrument.toFixed(2)+'</td>'+
 			'<td >'+pourcentageParAction.toFixed(2)+' %</td>'+
-			'<td><span class="glyphicon glyphicon-remove-sign text-danger" style="cursor:pointer;" onclick="supprimerInstrument('+instrumentList[i]._id+')" aria-hidden="true"></span></td>'+
+			'<td><span class="glyphicon glyphicon-remove-sign text-danger" style="cursor:pointer;" onclick="supprimerInstrument('+instrumentListWallet[i]._id+')" aria-hidden="true"></span></td>'+
 			'</tr>';
-		}
+		
 	}	
 	string += '<tr><td ><b>TOTAL</b></td>'+
 				'<td>&nbsp;</td>'+
@@ -87,19 +88,20 @@ accueil.callback = function () {
 		var r = JSON.parse(this.responseText);
 		if (r.categorie == "SUCCESS"){
 			if (r.suc_methode == "GETWALLETS") {
-				if(!r.portefeuillesNamesArray){
+				if(!r.portefeuillesNames){
 					document.getElementById('displayPortefeuille').innerHTML ='<td class="dropdown" onclick="redirect();"><a href="#" data-toggle="collapse" data-target="#one">Ajouter un portefeuille</a></td>';
 				}else{
-					console.log(r);
-					instrumentList = r.instrumentList;
-					portefeuillesNamesArray = r.portefeuillesNamesArray;;
+					//console.log(r);
+					instrumentList = r.portefeuillesNames;
+					portefeuillesNames = r.portefeuillesNames;					
 					var string ="";
+					portefeuillesNamesArray = Object.keys(portefeuillesNames)//tableau des noms des portefueilles
 					for (i in portefeuillesNamesArray){
 						string+='<li class="dropdown" onclick="afficherPortefeuille('+i+');"><a href="#" data-toggle="collapse" data-target="#one">'+portefeuillesNamesArray[i]+'</a></li>';
 					}
 					document.getElementById('displayPortefeuille').innerHTML = string;
 				}
-				}else if (r.suc_methode == "ADDVALUETODB") {
+			}else if (r.suc_methode == "ADDVALUETODB") {
 					document.getElementById('formAddValueButton').style.display = "";
 			 		document.getElementById('formAddValueButtonLoader').style.display = "none";
 			 		alert('ok');

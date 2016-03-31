@@ -184,7 +184,7 @@ MongoClient.connect(ID_MONGO, function(err, db) {
 			res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "2", err_message:'erreur methode find get wallet inconnue'}));
 		}
 		else if(results[0]){			
-			res.end(JSON.stringify({categorie:CATEGORIE_OK, suc_methode:NOM_METHODE, portefeuillesNamesArray:results[0].portefeuillesNamesArray,
+			res.end(JSON.stringify({categorie:CATEGORIE_OK, suc_methode:NOM_METHODE, portefeuillesNames:results[0].portefeuilles,
 				instrumentList:results[0].instrumentList}));	
 		}else{
 			res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "3", err_message:'erreur methode find get wallet inconnue'}));
@@ -208,7 +208,10 @@ var NOM_METHODE = "ADDWALLET";
 	    }		
 		var collection = db.collection(BOURSE_USERS);
 		c = c.split("cookieName=");//car cookieName=rom19282839" par excemple donc on eneleve le cookieName
-		collection.update({cookieValue:c[1]},{ $push: {portefeuillesNamesArray: data.name}}, function(err, db) {
+		var name = data.name;
+		var update ={};
+		update["portefeuilles."+name] = new Array();		
+		collection.update({cookieValue:c[1]},{ $set:update }, function(err, db) {
 			if(err){
 	    		throw err;
 	    		res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "2", err_message:"err update"}));
