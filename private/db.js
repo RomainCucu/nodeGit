@@ -35,6 +35,7 @@ exports.signin = function(data, res){//fonction pour ajouter un USER
 			}
 		if (results[0]){//si on trouve bien le login et le PW associé dans la base de donnée 
 			var cookieValue =  data.formLogin.substring(0,3) + Math.floor(Math.random() * 100000000);//pour cookieName
+			cookieValue = pad(20,cookieValue,'0');
 			if (data.formRememberMe == true){//si la case rememberme est cochée
 				var cookieExpire = new Date(new Date().getTime()+604800000).toUTCString();
 			}
@@ -81,8 +82,10 @@ exports.valid_cookie = function(c, obj, fct){
 	    	res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "71", err_message:ERR_CONNECTION_BASE}));
 	    }	
 		var collection = db.collection(BOURSE_USERS);
-		c = c.split("cookieName=");//car cookieName=rom19282839" par excemple donc on eneleve le cookieName
-		 collection.find({cookieValue: c[1]}).toArray(function(err, results) {
+		c = c.split("cookieName=");//car cookieName=rom19282839;azeaze" par excemple donc on eneleve le cookieName
+		c = c[1];
+		c = c.substr(0,20);
+		 collection.find({cookieValue: c}).toArray(function(err, results) {
 		 if (err){		 	
 		 	obj[fct](false);	 
 		 }else if (results[0]){		 	
@@ -113,11 +116,13 @@ var NOM_METHODE = "ADDVALUETODB";
 	    	res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "1", err_message:ERR_CONNECTION_BASE}));
 	    }		
 		var collection = db.collection(BOURSE_USERS);
-		c = c.split("cookieName=");//car cookieName=rom19282839" par excemple donc on eneleve le cookieName
+		c = c.split("cookieName=");//car cookieName=rom19282839;azeaze" par excemple donc on eneleve le cookieName
+		c = c[1];
+		c = c.substr(0,20);
 		delete data.action;
 		functionAdminTabSymbols(collection, data);
 		collection.update(
-			{cookieValue:c[1]},
+			{cookieValue:c},
 			{$push:
 				{					 					 
 				 	"instrumentList": data				 					
@@ -176,9 +181,10 @@ MongoClient.connect(ID_MONGO, function(err, db) {
     	res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "1", err_message:ERR_CONNECTION_BASE}));
     }
     var collection = db.collection(BOURSE_USERS);
-	c = c.split("cookieName=");//car cookieName=rom19282839" par excemple donc on eneleve le cookieName	
-
-	collection.find({cookieValue:c[1]}).toArray(function(err, results){
+	c = c.split("cookieName=");//car cookieName=rom19282839;azeaze" par excemple donc on eneleve le cookieName
+	c = c[1];
+	c = c.substr(0,20);
+	collection.find({cookieValue:c}).toArray(function(err, results){
 		if (err){
 			throw err;
 			res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "2", err_message:'erreur methode find get wallet inconnue'}));
@@ -212,6 +218,10 @@ var NOM_METHODE = "ADDWALLET";
 		var update ={};
 		update["portefeuilles."+name] = new Array();		
 		collection.update({cookieValue:c[1]},{ $set:update }, function(err, db) {
+		c = c.split("cookieName=");//car cookieName=rom19282839;azeaze" par excemple donc on eneleve le cookieName
+		c = c[1];
+		c = c.substr(0,20);
+		collection.update({cookieValue:c},{ $push: {portefeuillesNamesArray: data.name}}, function(err, db) {
 			if(err){
 	    		throw err;
 	    		res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "2", err_message:"err update"}));
@@ -236,9 +246,11 @@ exports.MAJVALEURSINSTRUMENTS = function(res, c){
     	res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "1", err_message:ERR_CONNECTION_BASE}));
     }
     var collection = db.collection(BOURSE_USERS);
-	c = c.split("cookieName=");//car cookieName=rom19282839" par excemple donc on eneleve le cookieName	
+		c = c.split("cookieName=");//car cookieName=rom19282839;azeaze" par excemple donc on eneleve le cookieName
+		c = c[1];
+		c = c.substr(0,20);	
 
-	collection.find({cookieValue:c[1]}).toArray(function(err, results){
+	collection.find({cookieValue:c}).toArray(function(err, results){
 		if (err){
 			throw err;
 			res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "2", err_message:'erreur methode find get wallet inconnue'}));
@@ -252,7 +264,7 @@ exports.MAJVALEURSINSTRUMENTS = function(res, c){
 						var obj = {};
 						var s = "instrumentList."+i+".valeurActuelle";						
 						obj[s]=value[0].replace(",",".");
-						collection.update({cookieValue:c[1]},{$set:obj},function(err, db) {
+						collection.update({cookieValue:c},{$set:obj},function(err, db) {
 							if(err){
 					    		throw err;
 					    		res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "2", err_message:"err update"}));
@@ -285,8 +297,10 @@ exports.supprimerInstrument = function (data, res, c){
     	res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "1", err_message:ERR_CONNECTION_BASE}));
     }
     var collection = db.collection(BOURSE_USERS);
-	c = c.split("cookieName=");//car cookieName=rom19282839" par excemple donc on eneleve le cookieName
-	collection.update({cookieValue:c[1]},{ $pull: {instrumentList: {_id:data._id}}}, function(err, db) {
+		c = c.split("cookieName=");//car cookieName=rom19282839;azeaze" par excemple donc on eneleve le cookieName
+		c = c[1];
+		c = c.substr(0,20);
+	collection.update({cookieValue:c},{ $pull: {instrumentList: {_id:data._id}}}, function(err, db) {
 		if(err){
 	    		throw err;
 	    		res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "2", err_message:"err update"}));
@@ -414,3 +428,9 @@ var DELETEINTRADAYTAB = function(collection,value,i){
 	});
 };
 
+//RCU 29/03/2016
+// ajout fonction pad pour que les cookies aient tous la même longueur
+function pad(width, string, padding) { 
+  return (width <= string.length) ? string : pad(width, padding + string, padding)
+}
+//fin RCU 29/03/2016
