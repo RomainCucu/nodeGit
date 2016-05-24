@@ -69,7 +69,7 @@ var afficherPortefeuille = function(i){
 	string += '</tbody>';
 	//document.getElementById('performanceGlobalPortefeuille').innerHTML = (parseInt(sommeValeurAchat)+parseInt(sommePlusMoinsValueAvecFrais)).toFixed(2);
 	document.getElementById('vuePortefeuille').innerHTML = string;//affichage tableau
-	accueil.showPieGraphe();
+	accueil.showPieGraphe(instrumentListWallet);
 }
 
 var supprimerInstrument = function(_id){
@@ -118,7 +118,6 @@ accueil.callback = function () {
 };
 
 accueil.showPieGraphe = function(data){
-	console.log("ici");
 	 $('#containerPieChart').highcharts({
         chart: {
             plotBackgroundColor: null,
@@ -127,7 +126,7 @@ accueil.showPieGraphe = function(data){
             type: 'pie'
         },
         title: {
-            text: 'Browser market shares January, 2015 to May, 2015'
+            text: 'Répartition du portefeuille'
         },
         tooltip: {
             pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
