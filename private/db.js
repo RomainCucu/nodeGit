@@ -225,11 +225,12 @@ var NOM_METHODE = "ADDWALLET";
 			if(err){
 	    		throw err;
 	    		res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "2", err_message:"err update"}));
-	    	}else{
+	    		}else{
 	    		res.end(JSON.stringify({categorie:CATEGORIE_OK,suc_methode:NOM_METHODE}));
-	    	}
+	    		}
 		});//collection update
-});
+		});
+})
 };
 
 /**
