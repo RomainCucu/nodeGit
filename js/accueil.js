@@ -69,7 +69,7 @@ var afficherPortefeuille = function(i){
 	string += '</tbody>';
 	//document.getElementById('performanceGlobalPortefeuille').innerHTML = (parseInt(sommeValeurAchat)+parseInt(sommePlusMoinsValueAvecFrais)).toFixed(2);
 	document.getElementById('vuePortefeuille').innerHTML = string;//affichage tableau
-	accueil.showPieGraphe(instrumentListWallet);
+	accueil.showPieGraphe(instrumentListWallet, sommeValeurActuelle);
 }
 
 var supprimerInstrument = function(_id){
@@ -117,7 +117,22 @@ accueil.callback = function () {
 	}
 };
 
-accueil.showPieGraphe = function(data){
+formatDataPieChart = function(data, sommeValeurActuelle){
+	var returnedData = new Array();
+	if(data.length > 0){
+		for(var i = 0; i < data.length; i++){
+			var tmpObj = {
+				name : data[i].nomCompletAction,
+				y : data[i].nombreActions*data[i].valeurActuelle*100/sommeValeurActuelle
+			};
+			returnedData.push(tmpObj);	
+		}
+	}
+	return returnedData;
+};
+
+accueil.showPieGraphe = function(data, sommeValeurActuelle){
+	formatedData = formatDataPieChart(data, sommeValeurActuelle);
 	 $('#containerPieChart').highcharts({
         chart: {
             plotBackgroundColor: null,
@@ -170,7 +185,7 @@ accueil.showPieGraphe = function(data){
             }]
         }]
     });
-}
+};
 
 /*--------------------------------------------------------------------------------------------*/
 
@@ -184,6 +199,6 @@ HTMLElement.prototype.has_class = function (c) {
 
 var redirect = function(){
 	window.location.href="./addWallet.html";
-}
+};
 
 
