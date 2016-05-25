@@ -122,7 +122,7 @@ formatDataPieChart = function(data, sommeValeurActuelle){
 	if(data.length > 0){
 		for(var i = 0; i < data.length; i++){
 			var tmpObj = {
-				name : data[i].nomCompletAction.slice(0,data[i].nomCompletAction.indexOf('('));,
+				name : data[i].nomCompletAction.slice(0,data[i].nomCompletAction.indexOf('(')),
 				y : data[i].nombreActions*data[i].valeurActuelle*100/sommeValeurActuelle
 			};
 			returnedData.push(tmpObj);	
