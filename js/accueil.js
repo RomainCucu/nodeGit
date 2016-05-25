@@ -129,7 +129,7 @@ formatDataPieChart = function(data, sommeValeurActuelle){
 		}
 	}
 	return returnedData;
-};
+}
 
 accueil.showPieGraphe = function(data, sommeValeurActuelle){
 	formatedData = formatDataPieChart(data, sommeValeurActuelle);
