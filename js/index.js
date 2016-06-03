@@ -43,8 +43,5 @@ signin.log_callback = function () {
 };
 
 window.onload = function(){
-	if(document.cookie.indexOf('cookieName') !=-1){
-		window.location.href = "https://stormy-reef-9786.herokuapp.com/html/accueil.html";
-	}
 	signin.start();
 };
