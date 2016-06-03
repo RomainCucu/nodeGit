@@ -42,6 +42,6 @@ signin.log_callback = function () {
 	}
 };
 
-window.onload = function(){
+
 	signin.start();
-};
+
