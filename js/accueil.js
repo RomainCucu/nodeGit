@@ -89,7 +89,7 @@ accueil.callback = function () {
 		var r = JSON.parse(this.responseText);
 		if (r.categorie == "SUCCESS"){
 			if (r.suc_methode == "GETWALLETS") {
-				if(!r.portefeuillesNames){
+				if(!r.portefeuillesNamesArray){
 					document.getElementById('displayPortefeuille').innerHTML ='<td class="dropdown" onclick="redirect();"><a href="#" data-toggle="collapse" data-target="#one">Ajouter un portefeuille</a></td>';
 				}else{
 					//console.log(r);
