@@ -70,7 +70,9 @@ var afficherPortefeuille = function(i){
 	string += '</tbody>';
 	//document.getElementById('performanceGlobalPortefeuille').innerHTML = (parseInt(sommeValeurAchat)+parseInt(sommePlusMoinsValueAvecFrais)).toFixed(2);
 	document.getElementById('vuePortefeuille').innerHTML = string;//affichage tableau
-	accueil.showPieGraphe(instrumentListWallet, sommeValeurActuelle);
+	if(sommeValeurActuelle != 0){// CaD pas de symbole dans le porteuille
+		accueil.showPieGraphe(instrumentListWallet, sommeValeurActuelle);
+	}
 }
 
 var supprimerInstrument = function(_id){
