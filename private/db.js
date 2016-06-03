@@ -190,7 +190,7 @@ MongoClient.connect(ID_MONGO, function(err, db) {
 			res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "2", err_message:'erreur methode find get wallet inconnue'}));
 		}
 		else if(results[0]){			
-			res.end(JSON.stringify({categorie:CATEGORIE_OK, suc_methode:NOM_METHODE, portefeuillesNames:results[0].portefeuilles,
+			res.end(JSON.stringify({categorie:CATEGORIE_OK, suc_methode:NOM_METHODE, portefeuillesNamesArray:results[0].portefeuillesNamesArray,
 				instrumentList:results[0].instrumentList}));	
 		}else{
 			res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "3", err_message:'erreur methode find get wallet inconnue'}));
