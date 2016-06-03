@@ -93,10 +93,9 @@ accueil.callback = function () {
 					document.getElementById('displayPortefeuille').innerHTML ='<td class="dropdown" onclick="redirect();"><a href="#" data-toggle="collapse" data-target="#one">Ajouter un portefeuille</a></td>';
 				}else{
 					//console.log(r);
-					instrumentList = r.portefeuillesNames;
-					portefeuillesNames = r.portefeuillesNames;					
+					instrumentList = r.instrumentList;
+					portefeuillesNamesArray = r.portefeuillesNamesArray;					
 					var string ="";
-					portefeuillesNamesArray = Object.keys(portefeuillesNames)//tableau des noms des portefueilles
 					for (i in portefeuillesNamesArray){
 						string+='<li class="dropdown" onclick="afficherPortefeuille('+i+');"><a href="#" data-toggle="collapse" data-target="#one">'+portefeuillesNamesArray[i]+'</a></li>';
 					}
