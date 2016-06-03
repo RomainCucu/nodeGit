@@ -140,10 +140,11 @@ cb_cookie:
 			if (b.action == 'FORMCHECKSYMBOL'){
 				stock.getStock(this, "coursActuel");
 				return;
+			}else if(b.action == "checkCookie"){
+				this.resp.end(JSON.stringify({categorie:"SUCCESS",suc_methode:"checkCookie"}));
 			}else if(b.action == "MAJVALEURSINSTRUMENTS"){
 				db.MAJVALEURSINSTRUMENTS(this.resp, this.req.headers.cookie);
-			}
-			else if(b.action == 'ADDVALUETODB'){
+			}else if(b.action == 'ADDVALUETODB'){
 				db.addValueToDB(b, this.resp, this.req.headers.cookie);
 			}else if(b.action == 'saveSymbol'){
 				db.saveSymbol(b, this.resp, this.req.headers.cookie);
