@@ -8,7 +8,11 @@
     <meta name="author" content="">
 
     <title>Signin</title>
-
+	<script>
+		if(document.cookie.indexOf('cookieName') !=-1){
+			window.location.href = "https://stormy-reef-9786.herokuapp.com/html/accueil.html";
+		}
+	</script>
     <!-- Bootstrap core CSS -->
     <link href="/css/bootstrap.min.css" rel="stylesheet">
 
