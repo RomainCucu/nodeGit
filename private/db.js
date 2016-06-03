@@ -213,19 +213,19 @@ var NOM_METHODE = "ADDWALLET";
 	    	res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "1", err_message:ERR_CONNECTION_BASE}));
 	    }		
 		var collection = db.collection(BOURSE_USERS);
-		c = c.split("cookieName=");//car cookieName=rom19282839" par excemple donc on eneleve le cookieName
+		c = c.split("cookieName=");//car cookieName=rom19282839;azeaze" par excemple donc on eneleve le cookieName
+		c = c[1];
+		c = c.substr(0,20);
 		var name = data.name;
 		var update ={};
 		update["portefeuilles."+name] = new Array();		
-		collection.update({cookieValue:c[1]},{ $set:update }, function(err, db) {
+		collection.update({cookieValue:c,{ $set:update }, function(err, db) {
 			if(err){
 	    		throw err;
 	    		res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "2", err_message:"err update"}));
 	    		}
-			c = c.split("cookieName=");//car cookieName=rom19282839;azeaze" par excemple donc on eneleve le cookieName
-			c = c[1];
-			c = c.substr(0,20);
-			collection.update({cookieValue:c[1]},{ $push: {portefeuillesNamesArray: data.name}}, function(err, db) {
+
+			collection.update({cookieValue:c},{ $push: {portefeuillesNamesArray: data.name}}, function(err, db) {
 				if(err){
 		    		throw err;
 		    		res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "2", err_message:"err update"}));
