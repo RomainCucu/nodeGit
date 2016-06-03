@@ -219,7 +219,7 @@ var NOM_METHODE = "ADDWALLET";
 		var name = data.name;
 		var update ={};
 		update["portefeuilles."+name] = new Array();		
-		collection.update({cookieValue:c,{ $set:update }, function(err, db) {
+		collection.update({cookieValue:c},{ $set:update }, function(err, db) {
 			if(err){
 	    		throw err;
 	    		res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "2", err_message:"err update"}));
