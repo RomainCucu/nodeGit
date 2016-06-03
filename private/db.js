@@ -75,7 +75,7 @@ exports.signin = function(data, res){//fonction pour ajouter un USER
 */
 exports.valid_cookie = function(c, obj, fct){
 	var NOM_METHODE = 'valid_cookie';
-	if (c){
+	if (c && c.indexOf("cookieName=") != -1){
 		MongoClient.connect(ID_MONGO, function(err, db) {
 		if(err){
 	    	throw err;
