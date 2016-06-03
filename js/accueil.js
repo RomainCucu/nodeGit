@@ -155,11 +155,9 @@ accueil.showPieGraphe = function(data, sommeValeurActuelle){
                 allowPointSelect: true,
                 cursor: 'pointer',
                 dataLabels: {
-                    enabled: true,
-                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
-                    style: {
-                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
-                    }
+                    enabled: false
+                },
+                 showInLegend: true
                 }
             }
         },
