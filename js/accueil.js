@@ -71,8 +71,9 @@ var afficherPortefeuille = function(i){
 	//document.getElementById('performanceGlobalPortefeuille').innerHTML = (parseInt(sommeValeurAchat)+parseInt(sommePlusMoinsValueAvecFrais)).toFixed(2);
 	document.getElementById('vuePortefeuille').innerHTML = string;//affichage tableau
 	if(sommeValeurActuelle != 0){// CaD pas de symbole dans le porteuille
-		document.getElementById('containerPieChart').innerHTML = "";//on fait disparaitre le pie chart
 		accueil.showPieGraphe(instrumentListWallet, sommeValeurActuelle);
+	}else{
+		document.getElementById('containerPieChart').innerHTML = "";//on fait disparaitre le pie chart
 	}
 }
 
