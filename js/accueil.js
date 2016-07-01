@@ -149,9 +149,11 @@ formatDataPieChart = function(data, sommeValeurActuelle){
 	var returnedData = new Array();
 	if(data.length > 0){
 		for(var i = 0; i < data.length; i++){
+			var instrumentSelected = $.grep(accueil.instrumentValuesNow, function(e){ return e.libelle == data[i].libelle; })
+			var valueInstrumentSelected = instrumentSelected[0].valeurActuelle;
 			var tmpObj = {
 				name : data[i].nomCompletAction.slice(0,data[i].nomCompletAction.indexOf('(')),
-				y : data[i].nombreActions*data[i].valeurActuelle*100/sommeValeurActuelle
+				y : data[i].nombreActions*valueInstrumentSelected*100/sommeValeurActuelle
 			};
 			returnedData.push(tmpObj);	
 		}

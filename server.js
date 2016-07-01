@@ -20,7 +20,7 @@ try{
 	db.MAJVALEURSALLINSTRUMENTS();
 	setInterval(db.MAJVALEURSALLINSTRUMENTS, 60000);//900000
 }catch(e){
-	console.log("err maj all instru");
+	console.log("srver : err maj all instru");
 }
 
 
