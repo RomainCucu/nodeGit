@@ -20,33 +20,28 @@ var CATEGORIE_OK = 'SUCCESS';
 ************************************************************************************
 *
 */
-exports.signin = function(data, res){//fonction pour ajouter un USER
+exports.signin = function(login, pwd, res){//fonction pour ajouter un USER
 	var NOM_METHODE = "SIGNIN";
 	MongoClient.connect(ID_MONGO, function(err, db) {
 	    if(err){
 	    	throw err;
 	    	res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "1", err_message:ERR_CONNECTION_BASE}));
 	    }		
-		var collection = db.collection(BOURSE_USERS);
-		collection.find({login:data.formLogin, pwd:data.formPassword}).toArray(function(err, results){			
+		var collection = db.collection(BOURSE_USERS);		
+		collection.find({login:login, pwd:pwd}).toArray(function(err, results){			
 			if (err) {
 				throw err;
 				res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "2", err_message:ERR_CONNECTION_BASE}));
 			}
 		if (results[0]){//si on trouve bien le login et le PW associé dans la base de donnée 
-			var cookieValue =  data.formLogin.substring(0,3) + Math.floor(Math.random() * 100000000);//pour cookieName
+			var cookieValue =  login.substring(0,3) + Math.floor(Math.random() * 100000000);//pour cookieName
 			cookieValue = pad(20,cookieValue,'0');
-			if (data.formRememberMe == true){//si la case rememberme est cochée
-				var cookieExpire = new Date(new Date().getTime()+604800000).toUTCString();
-			}
-			else{
-				var cookieExpire = new Date(new Date().getTime()+900000).toUTCString();//si rememberme pas cochee
-			}			
+			var cookieExpire = new Date(new Date().getTime()+604800000).toUTCString();
+
 			collection.update(
-				{login:data.formLogin, pwd:data.formPassword},
+				{login:login, pwd:pwd},
 				{$set:
 					{					 					 
-					 rememberme: data.formRememberMe,
 					 cookieValue: cookieValue
 					}
 				},
@@ -73,13 +68,13 @@ exports.signin = function(data, res){//fonction pour ajouter un USER
 * collection : bourse_users
 ************************************************************************************
 */
-exports.valid_cookie = function(c, obj, fct){
-	var NOM_METHODE = 'valid_cookie';
+exports.validCookie = function(c, obj, fct){
+	var NOM_METHODE = 'VALIDCOOKIE';
 	if (c && c.indexOf("cookieName=") != -1){
 		MongoClient.connect(ID_MONGO, function(err, db) {
 		if(err){
 	    	throw err;
-	    	res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "71", err_message:ERR_CONNECTION_BASE}));
+	    	res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "1", err_message:ERR_CONNECTION_BASE}));
 	    }	
 		var collection = db.collection(BOURSE_USERS);
 		c = c.split("cookieName=");//car cookieName=rom19282839;azeaze" par excemple donc on eneleve le cookieName
@@ -101,71 +96,6 @@ exports.valid_cookie = function(c, obj, fct){
 };
 // fin RCU - 09/08/2015 - Ajout fonction qui verifie l'existence d'un cookie dans la DB
 
-
-/**
-* RCU - 09/08/2015 - Ajout fonction qui ajoute une valeur dans un portefeuille
-* parametres entree : objet contenant les info de la valeur, la requete et le cookie
-* collection : bourse_users
-************************************************************************************
-*/
-exports.addValueToDB = function(data, res, c){
-var NOM_METHODE = "ADDVALUETODB";
-	MongoClient.connect(ID_MONGO, function(err, db) {
-	    if(err){
-	    	throw err;
-	    	res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "1", err_message:ERR_CONNECTION_BASE}));
-	    }		
-		var collection = db.collection(BOURSE_USERS);
-		c = c.split("cookieName=");//car cookieName=rom19282839;azeaze" par excemple donc on eneleve le cookieName
-		c = c[1];
-		c = c.substr(0,20);
-		delete data.action;
-		functionAdminTabSymbols(collection, data);
-		collection.update(
-			{cookieValue:c},
-			{$push:
-				{					 					 
-				 	"instrumentList": data				 					
-				 }
-			},
-			{upsert: false},function(err){
-			if (err){
-				throw err;
-				res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "3", err_message:'erreur methode update inconnue'}));
-			}
-			res.writeHead(200, {"Content-Type": "'text/plain'"});
-			res.end(JSON.stringify({categorie:CATEGORIE_OK,suc_methode:NOM_METHODE}));
-		});
-		
-});
-};
-
-/**
-* fonction qui ajoute le symbole aussi dans le document adminTabSymbols
-*/
-functionAdminTabSymbols = function(collection, data){
-	collection.find({login:"adminTabSymbols"},
-		{instrumentList:{$elemMatch: { libelle: data.libelle}}}).toArray(function(err, results){
-			if (err){
-				throw err;
-				res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "2", err_message:'erreur methode find get wallet inconnue'}));
-			}
-			else if(results[0].instrumentList){				
-				return;
-		}else{
-			collection.update({login:"adminTabSymbols"},
-			 { $push: { instrumentList: data  } },
-			 function(err){
-			 	if (err){
-					throw err;
-					//res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "2", err_message:'erreur methode update inconnue'}));
-				}
-				}
-			);
-		}
-		})
-	
-};
 
 /**
 * RCU - 26/08/2015 - Ajout fonction qui récupère le portefeuille
@@ -190,8 +120,7 @@ MongoClient.connect(ID_MONGO, function(err, db) {
 			res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "2", err_message:'erreur methode find get wallet inconnue'}));
 		}
 		else if(results[0]){			
-			res.end(JSON.stringify({categorie:CATEGORIE_OK, suc_methode:NOM_METHODE, portefeuillesNamesArray:results[0].portefeuillesNamesArray,
-				instrumentList:results[0].instrumentList}));	
+			res.end(JSON.stringify({categorie:CATEGORIE_OK, suc_methode:NOM_METHODE, wallets:results[0].wallets}));	
 		}else{
 			res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "3", err_message:'erreur methode find get wallet inconnue'}));
 		}
@@ -216,77 +145,75 @@ var NOM_METHODE = "ADDWALLET";
 		c = c.split("cookieName=");//car cookieName=rom19282839;azeaze" par excemple donc on eneleve le cookieName
 		c = c[1];
 		c = c.substr(0,20);
-		var name = data.name;
-		var update ={};
-		update["portefeuilles."+name] = new Array();		
-		collection.update({cookieValue:c},{ $set:update }, function(err, db) {
+		var name = data.name;				
+		collection.update({cookieValue:c},{ $addToSet:{wallets:{name:name}} }, function(err, db) {
 			if(err){
 	    		throw err;
 	    		res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "2", err_message:"err update"}));
 	    		}
-
-			collection.update({cookieValue:c},{ $push: {portefeuillesNamesArray: data.name}}, function(err, db) {
-				if(err){
-		    		throw err;
-		    		res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "2", err_message:"err update"}));
-		    		}else{
-		    		res.end(JSON.stringify({categorie:CATEGORIE_OK,suc_methode:NOM_METHODE}));
-		    		}
-			});//collection update
+	    		else{
+	    			res.end(JSON.stringify({categorie:CATEGORIE_OK,suc_methode:NOM_METHODE}));
+	    		}
 		});
 })
 };
 
 /**
-* RCU - 12/09/2015 - Ajout fonction qui mets à jours les valeurs des instru d'un compte
-* parametres entree : le cookie de l'utilisateur
+* RCU - 09/08/2015 - Ajout fonction qui ajoute une valeur dans un portefeuille
+* parametres entree : objet contenant les info de la valeur, la requete et le cookie
 * collection : bourse_users
 ************************************************************************************
 */
-exports.MAJVALEURSINSTRUMENTS = function(res, c){
-	var NOM_METHODE = "MAJVALEURSINSTRUMENTS";
+exports.addValueToWallet = function(data, walletName, res, c){
+var NOM_METHODE = "ADDVALUETOWALLET";
 	MongoClient.connect(ID_MONGO, function(err, db) {
-    if(err){
-    	throw err;
-    	res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "1", err_message:ERR_CONNECTION_BASE}));
-    }
-    var collection = db.collection(BOURSE_USERS);
+	    if(err){
+	    	throw err;
+	    	res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "1", err_message:ERR_CONNECTION_BASE}));
+	    }		
+		var collection = db.collection(BOURSE_USERS);
 		c = c.split("cookieName=");//car cookieName=rom19282839;azeaze" par excemple donc on eneleve le cookieName
 		c = c[1];
-		c = c.substr(0,20);	
-
-	collection.find({cookieValue:c}).toArray(function(err, results){
-		if (err){
-			throw err;
-			res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "2", err_message:'erreur methode find get wallet inconnue'}));
-		}
-		else if(results[0]){
-			var arr = results[0].instrumentList;
-			function iterate(i){
-				try{					
-					getStock(arr[i].libelle, function(value){
-					if(value!="err"){
-						var obj = {};
-						var s = "instrumentList."+i+".valeurActuelle";						
-						obj[s]=value[0].replace(",",".");
-						collection.update({cookieValue:c},{$set:obj},function(err, db) {
-							if(err){
-					    		throw err;
-					    		res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "2", err_message:"err update"}));
-					    	}					    	
-					});
-					}})
-				}catch(e){
-					console.log(e);
-				}
-			}for(i in arr) iterate(i);
-			res.end(JSON.stringify({categorie:CATEGORIE_OK, suc_methode:NOM_METHODE}));				    	
-		}else{
-			res.end(JSON.stringify({categorie:CATEGORIE_OK, suc_methode:NOM_METHODE}));				    	
-		}
-	});    
+		c = c.substr(0,20);
+		delete data.action;
+		functionAdminTabSymbols(collection, data);		
+		collection.update({"cookieValue":c, "wallets.name":walletName}
+			,
+			{$push:
+				{					 					 
+				 	"wallets.$.instrumentList": data				 					
+				 }
+			},
+			{upsert: false},function(err){
+			if (err){
+				throw err;
+				res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "3", err_message:'erreur methode update inconnue'}));
+			}else{
+				res.writeHead(200, {"Content-Type": "'text/plain'"});
+				res.end(JSON.stringify({categorie:CATEGORIE_OK,suc_methode:NOM_METHODE}));			
+			}
+		});
+		
 });
 };
+
+/**
+* fonction qui ajoute le symbole aussi dans le document adminTabSymbols
+*/
+functionAdminTabSymbols = function(collection, data){
+	collection.update({login:"ALLVALUESARRAY", 'instrumentList.libelle':{$ne:data.libelle}},
+		{$push:{
+			instrumentList:{libelle:data.libelle,
+				nomCompletAction:data.nomCompletAction}
+			}
+		},function(err, db) {
+			if(err){
+    			throw err;    			
+    		}
+    	}
+	);//deuxieme update	
+};
+
 
 /**
 * RCU - 12/09/2015 - Ajout fonction qui supprime un instrument
@@ -294,7 +221,7 @@ exports.MAJVALEURSINSTRUMENTS = function(res, c){
 * collection : bourse_users
 ************************************************************************************
 */
-exports.supprimerInstrument = function (data, res, c){
+exports.supprimerInstrument = function (id,walletName, res, c){
 	var NOM_METHODE = "SUPPRIMERINSTRUMENT";
 	MongoClient.connect(ID_MONGO, function(err, db) {
     if(err){
@@ -304,14 +231,14 @@ exports.supprimerInstrument = function (data, res, c){
     var collection = db.collection(BOURSE_USERS);
 		c = c.split("cookieName=");//car cookieName=rom19282839;azeaze" par excemple donc on eneleve le cookieName
 		c = c[1];
-		c = c.substr(0,20);
-	collection.update({cookieValue:c},{ $pull: {instrumentList: {_id:data._id}}}, function(err, db) {
+		c = c.substr(0,20);		
+	collection.update({cookieValue:c, "wallets.name":walletName},{ $pull: {"wallets.$.instrumentList":{_id:id}}}, function(err, db) {
 		if(err){
 	    		throw err;
 	    		res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "2", err_message:"err update"}));
-	    	}else{
-	    		res.end(JSON.stringify({categorie:CATEGORIE_OK,suc_methode:NOM_METHODE}));
-	    	}
+    	}else{
+    		res.end(JSON.stringify({categorie:CATEGORIE_OK,suc_methode:NOM_METHODE}));
+    	}
 	});
 });
 };
@@ -336,11 +263,11 @@ https.get("https://fr.finance.yahoo.com/q?s="+symbol+"&ql=1", function(res) {
           str = str.split("</span>");
           str = str[0].split(">");
           //date
-          var positionofmyvalue2 = str2.indexOf('"time_rtq"');
+          var positionofmyvalue2 = str2.indexOf('"yfs_market_time"');
           str2 = str2.slice(positionofmyvalue2,positionofmyvalue2+200);
           str2 = str2.split("</span>");
-          str2 = str2[0].split(">");                
-          cb([str[2],str2[2]]);
+          str2 = str2[0].split(">");     
+          cb(str[2],str2[1]);
     });
 }).on('error', function(e) {
   return("err");
@@ -349,7 +276,7 @@ https.get("https://fr.finance.yahoo.com/q?s="+symbol+"&ql=1", function(res) {
 };
 
 /**
-* RCU - 12/09/2015 - Ajout fonction qui mets à jours toutes les valeurs du doc adminTabSymbols
+* RCU - 12/09/2015 - Ajout fonction qui mets à jours toutes les valeurs du doc ALLVALUESARRAY
 * parametres entree : rien
 * collection : bourse_users
 ************************************************************************************
@@ -362,28 +289,29 @@ exports.MAJVALEURSALLINSTRUMENTS = function(){
     }
     var collection = db.collection(BOURSE_USERS);	
 
-	collection.find({login:"adminTabSymbols"}).toArray(function(err, results){
+	collection.find({login:"ALLVALUESARRAY"}).toArray(function(err, results){
 		if (err){
 			throw err;			
 		}
-		else if(results[0]){
+		else if(results[0].instrumentList){
 			var arr = results[0].instrumentList;
 			function iterate(i){
 				try{					
-					getStock(arr[i].libelle, function(value){
+					getStock(arr[i].libelle, function(value, date){
 						if(value!="err"){							
 							var obj = {};							
-							var obj3 = {};
 							var s = "instrumentList."+i+".valeurActuelle";							
-							var sAllDays = "instrumentList."+i+".tableauAllDays";
-							obj[s]=value[0].replace(",",".");							
-							collection.update({login:"adminTabSymbols"},{$set:obj},function(err, db) {
+							obj[s]=value.replace(",",".");
+							collection.update({login:"ALLVALUESARRAY"},{$set:obj},function(err, db) {
 								if(err){
 						    		throw err;					    		
 						    	}				    	
 							});
-							MAJINTRADAYVALUES(collection,value,i);
-							//DELETEINTRADAYTAB(collection,value,i);
+							collection.update({login:"ALLVALUESARRAY"},{$set:{MaJ:date}},function(err, db) {
+								if(err){
+						    		throw err;					    		
+						    	}				    	
+							});
 						}
 					})
 				}catch(e){
@@ -398,39 +326,27 @@ exports.MAJVALEURSALLINSTRUMENTS = function(){
 };
 
 /**
-* fonction qui met à jour les valeurs intraday en fonction de l'heure
+RCU - 01/07/2016 - on recupere les valeurs de tous les symboles de ALLVALUESARRAY
 */
-var MAJINTRADAYVALUES = function(collection,value,i){
-
-	var obj2 = {};
-	var sIntraday = "instrumentList."+i+".tableauIntraday";
-	obj2[sIntraday]=[value[0].replace(",","."),value[1]];
-	collection.update({login:"adminTabSymbols"},{$push:obj2},function(err, db) {
-		if(err){
+exports.getInstrumentValuesNow = function(res){
+	var NOM_METHODE = "GETINSTRUMENTVALUESNOW";
+	MongoClient.connect(ID_MONGO, function(err, db) {
+    if(err){
+    	throw err;
+    	res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "1", err_message:ERR_CONNECTION_BASE}));
+    }
+    var collection = db.collection(BOURSE_USERS);
+	collection.find({login:"ALLVALUESARRAY"}).toArray(function(err, results){
+		if (err){
 			throw err;			
-			return;		    		
+		}
+		else if(results[0].instrumentList){
+			res.end(JSON.stringify({categorie:CATEGORIE_OK,suc_methode:NOM_METHODE, data:results[0].instrumentList}));
 		}else{
-			return;
-		}			    	
-	});
-};
-
-/**
-* fonction qui supprime les valeurs intraday en fonction de l'heure
-*/
-var DELETEINTRADAYTAB = function(collection,value,i){
-
-	var obj2 = {};
-	var sIntraday = "instrumentList."+i+".tableauIntraday";
-	obj2[sIntraday]=[];
-	collection.update({login:"adminTabSymbols"},{$set:obj2},function(err, db) {
-		if(err){
-			throw err;			
-			return;		    		
-		}else{			
-			return;
-		}			    	
-	});
+			res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "1", err_message:"pas de symbol"}));
+		}
+	});    
+});
 };
 
 //RCU 29/03/2016

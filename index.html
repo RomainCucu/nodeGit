@@ -21,9 +21,9 @@
 			if (this.readyState == 4 && this.status == 200) {
 				var r = JSON.parse(this.responseText);		
 				if (r.categorie == "SUCCESS"){
-					if(r.suc_methode == "checkCookie"){
+					if(r.suc_methode == "CHECKCOOKIE"){
 						console.log('connected !');
-						window.location.href = "https://stormy-reef-9786.herokuapp.com/html/accueil.html";
+						window.location.href = "./html/accueil.html";
 					}			
 				}else if(r.message == "erreurCookie"){
 					console.log("pas de cookie en DB");
@@ -31,7 +31,7 @@
 				}
 			}
 		};
-		onload.post({action:'checkCookie'}, onload.log_callback);
+		onload.post({action:'CHECKCOOKIE'}, onload.log_callback);
 	</script>
     <!-- Bootstrap core CSS -->
     <link href="/css/bootstrap.min.css" rel="stylesheet">

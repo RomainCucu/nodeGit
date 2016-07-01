@@ -5,8 +5,6 @@ var addValueData = {};//objet à remplir des informations rentrées par l'utilis
 addValue.start = function(){
 	addValue.formCheckSymbol();//
 	addValue.addValueToDB();
-	//document.addEventListener('keydown', index.on_key_down);
-	//setInterval(function(){index.post({action:"checkSession"}, index._callback)},5000);
 };
 
 /*-------------------------------------pour envoyer addValueData au router----------------------------------------------*/
@@ -32,16 +30,15 @@ addValue.addValueToDB = function(){
 }
 
 addValue.remplissage = function(){
-	addValueData.action = "ADDVALUETODB";
-	addValueData.libelle = document.getElementById('formCheckSymbolValue').value;
+	addValueData.action = "ADDVALUETOWALLET";
+	addValueData.libelle = document.getElementById('formCheckSymbolValue').value.toUpperCase();
 	addValueData.nomCompletAction = document.getElementById('nomCompletAction').innerHTML;
 	addValueData.nombreActions = document.getElementById('nombreAction').value;
 	addValueData.valeurAchat = document.getElementById('valeurAchat').value.replace(",", ".");
 	addValueData.fraisAchat = document.getElementById('fraisAchat').value.replace(",", ".");
-	addValueData.fraisVente = document.getElementById('fraisVente').value.replace(",", ".");
-	addValueData.valeurActuelle = document.getElementById('resultStockValue').innerHTML.replace(",", ".");
+	addValueData.fraisVente = document.getElementById('fraisVente').value.replace(",", ".");	
 	addValueData.nomPortefeuille = document.getElementById('portefeuillesNameSelect').innerHTML;
-	addValueData._id = addValueData.nombreActions*addValueData.valeurAchat*addValueData.fraisAchat*Math.floor((Math.random() * 100000) + 1);
+	addValueData._id = ""+new Date().getTime()*addValueData.nombreActions*addValueData.valeurAchat*addValueData.fraisAchat*Math.floor((Math.random() * 100000) + 1);
 };//fonction qui prend toutes les valeurs rentrées
 
 addValue.post = function (addValueData, callback) {
@@ -60,7 +57,7 @@ addValue.addValue_callback = function () {
 				document.getElementById('formCheckSymbolButton').style.display = "";
 		 		document.getElementById('formCheckSymbolButtonLoader').style.display = "none";
 		 		document.getElementById("displayResultSymbol").innerHTML = '<span id="resultStockValue" class="text-primary col-md-3" style="padding:0">'+r.formCheckSymbolResponse[0]+'</span><br><span class="col-md-offset-0" id="nomCompletAction">'+r.formCheckSymbolResponse[1]+'</span><br><span class="col-md-offset-0">'+addValue.traitementDate(r.formCheckSymbolResponse[2])+'</span>';
-			}else if (r.suc_methode == "ADDVALUETODB") {
+			}else if (r.suc_methode == "ADDVALUETOWALLET") {
 				document.getElementById('formAddValueButton').style.display = "";
 		 		document.getElementById('formAddValueButtonLoader').style.display = "none";
 		 		document.getElementById('alertAddInstruSuccess').style.display = "";		 		
