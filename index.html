@@ -19,7 +19,8 @@
 		};
 		onload.log_callback = function () {
 			if (this.readyState == 4 && this.status == 200) {
-				var r = JSON.parse(this.responseText);		
+				var r = JSON.parse(this.responseText);
+        document.getElementById('signinButton').disabled=false;
 				if (r.categorie == "SUCCESS"){
 					if(r.suc_methode == "CHECKCOOKIE"){
 						console.log('connected !');
@@ -62,7 +63,7 @@
           <input type="checkbox" value="remember-me" id="formRememberMe"> Remember me
         </label>
         <div id="signinAjaxLoader">
-	        <button class="btn btn-lg btn-primary btn-block" type="submit" id="signinButton" >Sign in</button>
+	        <button class="btn btn-lg btn-primary btn-block" type="submit" id="signinButton" disabled>Sign in</button>
        		 <div id="signinError" class="text-danger"></div>
         </div>
       </form>
