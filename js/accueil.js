@@ -13,6 +13,7 @@ accueil.start = function(){
 
 //to get the current value of all instruments 
 var getInstrumentValuesNow = function(){
+	document.getElementById("displayPortefeuille").innerHTML = '<img class="" src="../images/ajax-loader.gif" width="30" height="30" />';
 	accueil.post({action:'GETINSTRUMENTVALUESNOW'}, accueil.callback);
 }
 
@@ -29,6 +30,11 @@ var showWallets = function(arr){
 		string+='<li class="dropdown" onclick="displayInsideWallet('+i+');"><a href="#" data-toggle="collapse" data-target="#one">'+arr[i].name+'</a></li>';
 	}
 	document.getElementById('displayPortefeuille').innerHTML = string;
+}
+
+//display last date update
+var showDateMaj = function(){
+	document.getElementById('showDateUpdate').innerHTML = "dernière mise à jour : " + accueil.majDate;
 }
 
 //we display inside of wallet
@@ -126,6 +132,7 @@ accueil.callback = function () {
 				}else{
 					console.log('recuperation portefeuilles OK');
 					accueil.wallets = r.wallets;									
+					showDateMaj();
 					showWallets(r.wallets);
 				}
 			}else if(r.suc_methode == "MAJVALEURSINSTRUMENTS"){
@@ -137,6 +144,7 @@ accueil.callback = function () {
 			}else if(r.suc_methode == "GETINSTRUMENTVALUESNOW"){
 				console.log('recuperation valeur actuelle OK');
 				accueil.instrumentValuesNow = r.data;
+				accueil.majDate = r.date;
 				getAllWallets();
 			}
 		}else{

@@ -341,7 +341,7 @@ exports.getInstrumentValuesNow = function(res){
 			throw err;			
 		}
 		else if(results[0].instrumentList){
-			res.end(JSON.stringify({categorie:CATEGORIE_OK,suc_methode:NOM_METHODE, data:results[0].instrumentList}));
+			res.end(JSON.stringify({categorie:CATEGORIE_OK,suc_methode:NOM_METHODE, data:results[0].instrumentList, date:results[0].MaJ}));
 		}else{
 			res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "1", err_message:"pas de symbol"}));
 		}
