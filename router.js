@@ -183,7 +183,7 @@ load_file:
 						util.log("ERROR - Problem reading file : " + e);
 					} else {
 						_this.file = d;
-						//util.puts("GET on path : " + util.inspect(_this.path));
+						util.puts("GET on path : " + util.inspect(_this.path));
 						_this.file_processing();
 			} });
 			} else {
