@@ -6,9 +6,11 @@ addWallet.start = function(){
 
 addWallet.addWalletForm = function(){
 	document.getElementById('addWalletForm').onsubmit = function(event){
-		document.getElementById('addWalletButton').style.display = "none";
-		document.getElementById('addWalletButtonLoader').style.display = "";
-		var addWalletCheckName = document.getElementById('addWalletCheckName').value;
+		hideElement('addWalletButton');
+		hideElement('alertAddWalletFail');
+		hideElement('alertAddWalletSuccess');
+		showElement('addWalletButtonLoader');
+		var addWalletCheckName = getElementValue('addWalletCheckName');
 		addWallet.post({action:'ADDWALLET',name:addWalletCheckName}, addWallet.callback);
 		event.preventDefault();
 	}
@@ -24,13 +26,18 @@ addWallet.post = function (data, callback) {
 
 addWallet.callback = function () {
 	if (this.readyState == 4 && this.status == 200) {
-		var r = JSON.parse(this.responseText);
-		console.log(r);
+		var r = JSON.parse(this.responseText);		
 		if (r.categorie == "SUCCESS"){
 			if (r.suc_methode == "ADDWALLET") {
-				document.getElementById('addWalletButton').style.display = "";
-		 		document.getElementById('addWalletButtonLoader').style.display = "none";
-		 		document.getElementById('alertAddWalletSuccess').style.display = "";
+				showElement('addWalletButton');
+		 		hideElement('addWalletButtonLoader');
+		 		if(r.db == 1){
+		 			showElement('alertAddWalletSuccess');
+		 		}
+		 		if(r.db == 0){
+		 			showElement('alertAddWalletFail');
+		 		}
+		 		getAllWallets();
 		 		//$('#modalAjoutPortefeuille').modal('hide');		 		
 			}else {
 				document.getElementById('alertAddWalletFail').style.display = "";
@@ -40,8 +47,3 @@ addWallet.callback = function () {
 };
 
 addWallet.start();
-
-//window.onload = function(){//fonctions qui se lancent au démarrage
-//	addWallet.start();
-//};
-

@@ -17,10 +17,10 @@ http.createServer(server.receive_request).listen(server.port, server.address);
 util.log("INFO - Server started, listening " + server.address + ":" + server.port);
 
 try{
-	//db.MAJVALEURSALLINSTRUMENTS();
-	//setInterval(db.MAJVALEURSALLINSTRUMENTS, 99000);//900000
+	db.MAJVALEURSALLINSTRUMENTS();
+	setInterval(db.MAJVALEURSALLINSTRUMENTS, 60000);//900000
 }catch(e){
-	//console.log("err maj all instru");
+	console.log("srver : err maj all instru");
 }
 
 

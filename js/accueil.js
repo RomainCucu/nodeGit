@@ -1,61 +1,93 @@
+/**
+Object acceuil is composed like :
+[wallets]
+[instrumentValuesNow]
+*/
+
 var accueil = {};
 
-
-var portefeuillesNamesArray = [];//objet à remplir des informations rentrées par l'utilisateur
-var instrumentList = [];//objet qui contient les instruments d'un portefueilles
-
-accueil.start = function(){	
-	accueil.post({action:'MAJVALEURSINSTRUMENTS'}, accueil.callback);
+accueil.start = function(){		
+	getInstrumentValuesNow();
+	//getAllWallets();
 };
 
+//to get the current value of all instruments 
+var getInstrumentValuesNow = function(){
+	document.getElementById("displayPortefeuille").innerHTML = '<img class="" src="../images/ajax-loader.gif" width="30" height="30" />';
+	accueil.post({action:'GETINSTRUMENTVALUESNOW'}, accueil.callback);
+}
+
+//we retrieve all wallets
 var getAllWallets = function(){
 	document.getElementById("displayPortefeuille").innerHTML = '<img class="" src="../images/ajax-loader.gif" width="30" height="30" />';
 	accueil.post({action:'GETWALLETS'}, accueil.callback);
 }
 
-var afficherPortefeuille = function(i){		
+//we display the line with wallets names
+var showWallets = function(arr){
+	var string ="";
+	for (i in arr){
+		string+='<li class="dropdown" onclick="displayInsideWallet('+i+');"><a href="#" data-toggle="collapse" data-target="#one">'+arr[i].name+'</a></li>';
+	}
+	document.getElementById('displayPortefeuille').innerHTML = string;
+}
+
+//display last date update
+var showDateMaj = function(){
+	document.getElementById('showDateUpdate').innerHTML = "dernière mise à jour : " + accueil.majDate;
+}
+
+//we display inside of wallet
+var displayInsideWallet = function(i){		
 	var sommeValeurAchat = 0;
 	var sommeValeurActuelle = 0;
 	var sommeFraisAchat = 0;
 	var sommeFraisVente = 0;
 	var sommePlusMoinsValueSansFrais = 0;
-	var sommePlusMoinsValueAvecFrais = 0;
-	var nameWallet = portefeuillesNamesArray[i];
-	var instrumentListWallet = instrumentList;
-	document.getElementById('affichageTitrePortefeuille').innerHTML='<h1 id="portefeuillesNameSelect" class="col-md-4">'+nameWallet+'</h1>'+	
+	var sommePlusMoinsValueAvecFrais = 0;	
+	var wallet = accueil.wallets[i];
+	var instrumentList = accueil.wallets[i].instrumentList;
+	var instrumentValuesNow = accueil.instrumentValuesNow;
+	//titre portefeuille et bouton modal ajout value
+	document.getElementById('affichageTitrePortefeuille').innerHTML='<h1 id="portefeuillesNameSelect" class="col-md-4">'+wallet.name+'</h1>'+	
 	'<button type="button" style="margin-top:2%;" class="btn btn-success col-md-3 col-md-offset-3" data-toggle="modal" data-target="#modalAjoutInstrument">'+
 	'ajouter un instrument</button>';
+	if(!instrumentList){
+		document.getElementById('vuePortefeuille').innerHTML = "";
+		return;
+	}
+	//affichage titre colonnes
 	var string = '<thead><tr><th>Libellé</th><th>Nombre</th><th>Valeur Achat</th><th>Valeur Actuelle</th><th>Frais A</th><th>Frais V</th>'+
 	'<th>+/- value</th><th >évolution pourcentage</th><th>Action</th></tr></thead>';
 	string += '<tbody>';
-	for (i in instrumentListWallet){
-		if(instrumentListWallet[i].nomPortefeuille == nameWallet){
+	for (i in instrumentList){
+			var instrumentSelected = $.grep(instrumentValuesNow, function(e){ return e.libelle == instrumentList[i].libelle; })
+			var valueInstrumentSelected = instrumentSelected[0].valeurActuelle;
 			//  +/- value par instrument avec les frais
-			var plusMoinsValueInstrument = instrumentListWallet[i].nombreActions*(instrumentListWallet[i].valeurActuelle-instrumentListWallet[i].valeurAchat)-instrumentListWallet[i].fraisAchat-instrumentListWallet[i].fraisVente;
+			var plusMoinsValueInstrument = instrumentList[i].nombreActions*(valueInstrumentSelected-instrumentList[i].valeurAchat)-instrumentList[i].fraisAchat-instrumentList[i].fraisVente;
 			//  somme +/- value des instruments AVEC les frais
 			sommePlusMoinsValueAvecFrais += plusMoinsValueInstrument;
 			//  somme +/- value des instruments SANS les frais
-			sommePlusMoinsValueSansFrais += instrumentListWallet[i].nombreActions*(instrumentListWallet[i].valeurActuelle-instrumentListWallet[i].valeurAchat);
+			sommePlusMoinsValueSansFrais += instrumentList[i].nombreActions*(valueInstrumentSelected-instrumentList[i].valeurAchat);
 			// somme lors de l'achat des titres sans frais
-			sommeValeurAchat += instrumentListWallet[i].nombreActions*instrumentListWallet[i].valeurAchat;
+			sommeValeurAchat += instrumentList[i].nombreActions*instrumentList[i].valeurAchat;
 			// somme actuelle des valeurs detenues
-			sommeValeurActuelle += instrumentListWallet[i].nombreActions*instrumentListWallet[i].valeurActuelle;
+			sommeValeurActuelle += instrumentList[i].nombreActions*valueInstrumentSelected;
 			// somme des frais achat
-			sommeFraisAchat += parseInt(instrumentListWallet[i].fraisAchat);
+			sommeFraisAchat += parseInt(instrumentList[i].fraisAchat);
 			// somme des frais vente
-			sommeFraisVente += parseInt(instrumentListWallet[i].fraisVente);
-			pourcentageParAction = (instrumentListWallet[i].valeurActuelle-instrumentListWallet[i].valeurAchat)/instrumentListWallet[i].valeurAchat*100;
-			string += '<tr><td >'+instrumentListWallet[i].nomCompletAction.trim()+'</td>'+
-			'<td >'+instrumentListWallet[i].nombreActions+'</td>'+
-			'<td >'+instrumentListWallet[i].valeurAchat+'</td>'+
-			'<td >'+instrumentListWallet[i].valeurActuelle+'</td>'+
-			'<td >'+instrumentListWallet[i].fraisAchat+'</td>'+
-			'<td >'+instrumentListWallet[i].fraisVente+'</td>'+
+			sommeFraisVente += parseInt(instrumentList[i].fraisVente);
+			pourcentageParAction = (valueInstrumentSelected-instrumentList[i].valeurAchat)/instrumentList[i].valeurAchat*100;
+			string += '<tr><td >'+instrumentList[i].nomCompletAction.trim()+'</td>'+
+			'<td >'+instrumentList[i].nombreActions+'</td>'+
+			'<td >'+instrumentList[i].valeurAchat+'</td>'+
+			'<td >'+valueInstrumentSelected+'</td>'+
+			'<td >'+instrumentList[i].fraisAchat+'</td>'+
+			'<td >'+instrumentList[i].fraisVente+'</td>'+
 			'<td >'+plusMoinsValueInstrument.toFixed(2)+'</td>'+
 			'<td >'+pourcentageParAction.toFixed(2)+' %</td>'+
-			'<td><span class="glyphicon glyphicon-remove-sign text-danger" style="cursor:pointer;" onclick="supprimerInstrument('+instrumentListWallet[i]._id+')" aria-hidden="true"></span></td>'+
+			'<td><span class="glyphicon glyphicon-remove-sign text-danger" style="cursor:pointer;" onclick="supprimerInstrument(\''+instrumentList[i]._id+'\',\''+wallet.name+'\')" aria-hidden="true"></span></td>'+
 			'</tr>';
-		}
 	}	
 	string += '<tr><td ><b>TOTAL</b></td>'+
 				'<td>&nbsp;</td>'+
@@ -71,14 +103,15 @@ var afficherPortefeuille = function(i){
 	//document.getElementById('performanceGlobalPortefeuille').innerHTML = (parseInt(sommeValeurAchat)+parseInt(sommePlusMoinsValueAvecFrais)).toFixed(2);
 	document.getElementById('vuePortefeuille').innerHTML = string;//affichage tableau
 	if(sommeValeurActuelle != 0){// CaD pas de symbole dans le porteuille
-		accueil.showPieGraphe(instrumentListWallet, sommeValeurActuelle);
+		accueil.showPieGraphe(instrumentList, sommeValeurActuelle);
 	}else{
 		document.getElementById('containerPieChart').innerHTML = "";//on fait disparaitre le pie chart
 	}
 }
 
-var supprimerInstrument = function(_id){
-	accueil.post({action:'SUPPRIMERINSTRUMENT',_id:_id}, accueil.callback);
+//to delete a line in the wallet
+var supprimerInstrument = function(_id,walletName){	
+	accueil.post({action:'SUPPRIMERINSTRUMENT',_id:_id,walletName:walletName}, accueil.callback);
 }
 
 accueil.post = function (data, callback) {
@@ -94,30 +127,29 @@ accueil.callback = function () {
 		var r = JSON.parse(this.responseText);
 		if (r.categorie == "SUCCESS"){
 			if (r.suc_methode == "GETWALLETS") {
-				if(!r.portefeuillesNamesArray){
-					document.getElementById('displayPortefeuille').innerHTML ='<td class="dropdown" onclick="redirect();"><a href="#" data-toggle="collapse" data-target="#one">Ajouter un portefeuille</a></td>';
+				if(!r.wallets){
+					document.getElementById('displayPortefeuille').innerHTML ='<td class="dropdown">Pas de porteuille !</td>';
 				}else{
-					//console.log(r);
-					instrumentList = r.instrumentList;
-					portefeuillesNamesArray = r.portefeuillesNamesArray;					
-					var string ="";
-					for (i in portefeuillesNamesArray){
-						string+='<li class="dropdown" onclick="afficherPortefeuille('+i+');"><a href="#" data-toggle="collapse" data-target="#one">'+portefeuillesNamesArray[i]+'</a></li>';
-					}
-					document.getElementById('displayPortefeuille').innerHTML = string;
+					console.log('recuperation portefeuilles OK');
+					accueil.wallets = r.wallets;									
+					showDateMaj();
+					showWallets(r.wallets);
 				}
-			}else if (r.suc_methode == "ADDVALUETODB") {
-					document.getElementById('formAddValueButton').style.display = "";
-			 		document.getElementById('formAddValueButtonLoader').style.display = "none";
-			 		alert('ok');
-				}else if(r.suc_methode == "MAJVALEURSINSTRUMENTS"){
-					console.log("instru MAJ");
-					getAllWallets();
-				}else if(r.suc_methode == "SUPPRIMERINSTRUMENT"){
-					console.log('suppression OK');
-					getAllWallets();
-				}
-		}else alert('ko');
+			}else if(r.suc_methode == "MAJVALEURSINSTRUMENTS"){
+				console.log("instru MAJ OK");
+				getAllWallets();
+			}else if(r.suc_methode == "SUPPRIMERINSTRUMENT"){
+				console.log('suppression OK');
+				getAllWallets();
+			}else if(r.suc_methode == "GETINSTRUMENTVALUESNOW"){
+				console.log('recuperation valeur actuelle OK');
+				accueil.instrumentValuesNow = r.data;
+				accueil.majDate = r.date;
+				getAllWallets();
+			}
+		}else{
+			alert('ko message : '+r.err_message);	
+		} 
 	}
 };
 
@@ -125,9 +157,11 @@ formatDataPieChart = function(data, sommeValeurActuelle){
 	var returnedData = new Array();
 	if(data.length > 0){
 		for(var i = 0; i < data.length; i++){
+			var instrumentSelected = $.grep(accueil.instrumentValuesNow, function(e){ return e.libelle == data[i].libelle; })
+			var valueInstrumentSelected = instrumentSelected[0].valeurActuelle;
 			var tmpObj = {
 				name : data[i].nomCompletAction.slice(0,data[i].nomCompletAction.indexOf('(')),
-				y : data[i].nombreActions*data[i].valeurActuelle*100/sommeValeurActuelle
+				y : data[i].nombreActions*valueInstrumentSelected*100/sommeValeurActuelle
 			};
 			returnedData.push(tmpObj);	
 		}
@@ -165,7 +199,7 @@ accueil.showPieGraphe = function(data, sommeValeurActuelle){
             }
         },
         series: [{
-            name: 'Brands',
+            name: 'Part',
             colorByPoint: true,
             data: formatedData
         }]
@@ -177,13 +211,3 @@ accueil.showPieGraphe = function(data, sommeValeurActuelle){
 window.onload = function(){//fonctions qui se lancent au démarrage
 	accueil.start();
 };
-
-HTMLElement.prototype.has_class = function (c) {
-	return (this.className.indexOf(c) >= 0);
-};
-
-var redirect = function(){
-	window.location.href="./addWallet.html";
-};
-
-

@@ -2,10 +2,11 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Titre de la page</title>
+    <title>Accueil</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
+    <link rel="icon" type="image/png" href="../favicon.ico" />
     <script type="text/javascript" src="../js/jquery.js"> </script>
     <script src="../js/highcharts.js"></script>
     <script src="../js/exporting.js"></script>
@@ -26,7 +27,10 @@
                   <a class="navbar-brand" href="./accueil.html">Brand</a>
                 </div>
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-5">
-                  <p class="navbar-text navbar-right">Signed in as <a href="#" class="navbar-link">Mark Otto</a></p>
+                  <p class="navbar-text navbar-right">
+                    <button type="button" class="btn btn-danger btn-sm" onclick="eraseCookie();window.location.href='../index.html'"><span class="glyphicon glyphicon-log-out"></span> Log out
+                    </button>
+                  </p>
                 </div>
               </div>
             </nav>
@@ -39,7 +43,8 @@
         <div class="panel-heading">
           <div type="button" class="btn btn-success" data-toggle="modal" data-target="#modalAjoutPortefeuille">
             ajouter un portefeuille
-          </div>   
+          </div>
+          <span id="showDateUpdate" class="col-md-offset-2 text-info"></span>           
         </div>
          <table class="table">
           <tr class="nav navbar-nav navbar" id="displayPortefeuille">            
@@ -55,8 +60,10 @@
       </div>      
       <div class="col-md-12">
         <hr>
+        <div class="table-responsive">
           <table class="table table-bordered" data-toggle="table"  data-cache="false" data-height="299" id="vuePortefeuille">            
           </table>
+        </div>
       </div>
       <div class="col-md-12" id="performanceGlobalPortefeuille">
       </div>
@@ -98,9 +105,9 @@
           <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
           <h4>Wallet added successfully</h4>
         </div>
-        <div class="alert alert-success alert-dismissible fade in" role="alert" id="alertAddWalletFail" style="display:none;">
+        <div class="alert alert-danger alert-dismissible fade in" role="alert" id="alertAddWalletFail" style="display:none;">
           <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-          <h4>Wallet was not added</h4>
+          <h4>Wallet was not added : name already exists !</h4>
         </div>
       </div>      
     </div>
@@ -191,8 +198,8 @@
 </script>
 </html>
 
+<script type="text/javascript" src="../js/commun/util.js"> </script>
 <script type="text/javascript" src="../js/accueil.js"> </script>
 <script type="text/javascript" src="../js/addWallet.js"> </script>
 <script type="text/javascript" src="../js/addValue.js"> </script>
-
 <script type="text/javascript" src="../js/bootstrap.min.js"> </script>

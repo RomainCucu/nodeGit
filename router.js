@@ -20,8 +20,6 @@ srouter = function (req, resp) {
 	 if (req && resp) {
 			this.req = req;
 			this.resp = resp;
-			//console.log("---------: "+util.inspect(req, false, null));
-			//console.log("---------: "+util.inspect(resp, false, null));
 			this.pathname = "";
 			this.filetype = "";
 			this.path = "";
@@ -66,7 +64,7 @@ get_method:
 		
 		if (this.pathname[0] == "html")//pour voir dans quel page on va
 			{
-				db.valid_cookie(this.req.headers.cookie, this, "check_cookie");
+				db.validCookie(this.req.headers.cookie, this, "check_cookie");
 			}
 		else{			
 				this.read_file();
@@ -101,17 +99,45 @@ go_post:
 	function (b) {
 		b = JSON.parse(b);
 		this.b = b;
-		if (b.action == "152") {
-			//db.login(b.login, b.password, this.resp);
-			return;
-			//console.log(this.coursActuel);
-					
-		}else if(b.action == "signin") {
-			db.signin(b, this.resp);
-		}else {
-			db.valid_cookie(this.req.headers.cookie, this, "cb_cookie");
+		if(b.action == "SIGNIN") {
+			db.signin(b.formLogin, b.formPassword, this.resp);
+		}else{
+			db.validCookie(this.req.headers.cookie, this, "cb_cookie");
 		}	
 },
+
+cb_cookie:
+	function (ret) {	
+		var b = this.b;
+		if (ret) {	
+			if (b.action == 'FORMCHECKSYMBOL'){
+				stock.getStock(this, "coursActuel");
+				return;
+			}else if(b.action == "CHECKCOOKIE"){
+				this.resp.end(JSON.stringify({categorie:"SUCCESS",suc_methode:"CHECKCOOKIE"}));
+			}else if(b.action == "GETINSTRUMENTVALUESNOW"){
+				db.getInstrumentValuesNow(this.resp);
+			}else if(b.action == 'ADDVALUETOWALLET'){
+				var nomPortefeuille = b.nomPortefeuille;
+				delete b.nomPortefeuille;
+				db.addValueToWallet(b, nomPortefeuille, this.resp, this.req.headers.cookie);
+			}else if (b.action == "GETWALLETS"){
+				db.getWallets(this.resp, this.req.headers.cookie)
+			}else if (b.action == "ADDWALLET"){
+				db.addWallet(b, this.resp, this.req.headers.cookie)
+			}else if(b.action == "SUPPRIMERINSTRUMENT"){
+				db.supprimerInstrument(b._id, b.walletName, this.resp, this.req.headers.cookie)
+			}
+		}else{
+			util.log("INFO - Action not found : " + b.ac);
+			this.resp.end(JSON.stringify({message:"erreurCookie"}));
+		}
+				
+		
+		//this.resp.writeHead(501, {"Content -Type": "application/json"});
+		//this.resp.end(JSON.stringify({message: "nocookie"}));
+		
+	},
 
 coursActuel:
 	function (ret){
@@ -133,46 +159,9 @@ coursActuel:
 		
 	},
 
-cb_cookie:
-	function (ret) {	
-		var b = this.b;
-		if (ret) {	
-			if (b.action == 'FORMCHECKSYMBOL'){
-				stock.getStock(this, "coursActuel");
-				return;
-			}else if(b.action == "checkCookie"){
-				this.resp.end(JSON.stringify({categorie:"SUCCESS",suc_methode:"checkCookie"}));
-			}else if(b.action == "MAJVALEURSINSTRUMENTS"){
-				db.MAJVALEURSINSTRUMENTS(this.resp, this.req.headers.cookie);
-			}else if(b.action == 'ADDVALUETODB'){
-				db.addValueToDB(b, this.resp, this.req.headers.cookie);
-			}else if(b.action == 'saveSymbol'){
-				db.saveSymbol(b, this.resp, this.req.headers.cookie);
-			}else if (b.action =="getAllSymbol"){				
-				db.getAllSymbol(this.resp, this.req.headers.cookie)
-			}else if (b.action == "GETWALLETS"){
-				db.getWallets(this.resp, this.req.headers.cookie)
-			}else if (b.action == "ADDWALLET"){
-				db.addWallet(b, this.resp, this.req.headers.cookie)
-			}else if(b.action == "SUPPRIMERINSTRUMENT"){
-				db.supprimerInstrument(b, this.resp, this.req.headers.cookie)
-			}
-		}else{
-			util.log("INFO - Action not found : " + b.ac);
-			this.resp.end(JSON.stringify({message:"erreurCookie"}));
-		}
-				
-		
-		//this.resp.writeHead(501, {"Content -Type": "application/json"});
-		//this.resp.end(JSON.stringify({message: "nocookie"}));
-		
-	},
-
-
 
 read_file:
-function () {
-	console.log(util.inspect(this.pathname));
+function () {	
 	if (!this.pathname[0] || this.pathname[0] == "nodejs") {
 		//util.log("ALERT - Hack attempt, resquest on : " + util.inspect(this.pathname)
 		this.pathname = "./index.html";

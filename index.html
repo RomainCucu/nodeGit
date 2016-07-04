@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-
+    <link rel="icon" type="image/png" href="./favicon.ico" />
     <title>Signin</title>
 	<script>
 		var onload = {};
@@ -19,9 +19,10 @@
 		};
 		onload.log_callback = function () {
 			if (this.readyState == 4 && this.status == 200) {
-				var r = JSON.parse(this.responseText);		
+				var r = JSON.parse(this.responseText);
+        document.getElementById('signinButton').disabled=false;
 				if (r.categorie == "SUCCESS"){
-					if(r.suc_methode == "checkCookie"){
+					if(r.suc_methode == "CHECKCOOKIE"){
 						console.log('connected !');
 						window.location.href = "./html/accueil.html";
 					}			
@@ -31,7 +32,7 @@
 				}
 			}
 		};
-		onload.post({action:'checkCookie'}, onload.log_callback);
+		onload.post({action:'CHECKCOOKIE'}, onload.log_callback);
 	</script>
     <!-- Bootstrap core CSS -->
     <link href="/css/bootstrap.min.css" rel="stylesheet">
@@ -62,7 +63,7 @@
           <input type="checkbox" value="remember-me" id="formRememberMe"> Remember me
         </label>
         <div id="signinAjaxLoader">
-	        <button class="btn btn-lg btn-primary btn-block" type="submit" id="signinButton" >Sign in</button>
+	        <button class="btn btn-lg btn-primary btn-block" type="submit" id="signinButton" disabled>Sign in</button>
        		 <div id="signinError" class="text-danger"></div>
         </div>
       </form>
