@@ -145,14 +145,16 @@ var NOM_METHODE = "ADDWALLET";
 		c = c.split("cookieName=");//car cookieName=rom19282839;azeaze" par excemple donc on eneleve le cookieName
 		c = c[1];
 		c = c.substr(0,20);
-		var name = data.name;				
-		collection.update({cookieValue:c},{ $addToSet:{wallets:{name:name}} }, function(err, db) {
+		var name = data.name.toUpperCase();				
+		collection.update({cookieValue:c, 'wallets.name':{$ne:name}},{ $addToSet:{wallets:{name:name}} }, function(err, db) {
 			if(err){
 	    		throw err;
-	    		res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "2", err_message:"err update"}));
+	    			res.end(JSON.stringify({categorie:CATEGORIE_ERREUR,err_methode: NOM_METHODE, err_ligne: "2", err_message:"err update"}));
 	    		}
-	    		else{
-	    			res.end(JSON.stringify({categorie:CATEGORIE_OK,suc_methode:NOM_METHODE}));
+	    		else if(db == 1){	    			
+	    			res.end(JSON.stringify({categorie:CATEGORIE_OK,suc_methode:NOM_METHODE, db:db}));
+	    		}else{
+	    			res.end(JSON.stringify({categorie:CATEGORIE_OK,suc_methode:NOM_METHODE, db:db}));
 	    		}
 		});
 })

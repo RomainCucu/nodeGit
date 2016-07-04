@@ -7,6 +7,8 @@ addWallet.start = function(){
 addWallet.addWalletForm = function(){
 	document.getElementById('addWalletForm').onsubmit = function(event){
 		hideElement('addWalletButton');
+		hideElement('alertAddWalletFail');
+		hideElement('alertAddWalletSuccess');
 		showElement('addWalletButtonLoader');
 		var addWalletCheckName = getElementValue('addWalletCheckName');
 		addWallet.post({action:'ADDWALLET',name:addWalletCheckName}, addWallet.callback);
@@ -29,7 +31,12 @@ addWallet.callback = function () {
 			if (r.suc_methode == "ADDWALLET") {
 				showElement('addWalletButton');
 		 		hideElement('addWalletButtonLoader');
-		 		showElement('alertAddWalletSuccess');
+		 		if(r.db == 1){
+		 			showElement('alertAddWalletSuccess');
+		 		}
+		 		if(r.db == 0){
+		 			showElement('alertAddWalletFail');
+		 		}
 		 		getAllWallets();
 		 		//$('#modalAjoutPortefeuille').modal('hide');		 		
 			}else {

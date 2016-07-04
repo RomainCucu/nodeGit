@@ -199,7 +199,7 @@ accueil.showPieGraphe = function(data, sommeValeurActuelle){
             }
         },
         series: [{
-            name: 'Brands',
+            name: 'Part',
             colorByPoint: true,
             data: formatedData
         }]
